@@ -1397,3 +1397,18 @@ body.vocab { overflow-x: hidden; overflow-y: auto; }
   font-size: .8em; letter-spacing: .2em; text-transform: uppercase;
   color: var(--deeper); font-weight: 700; margin: 2.2em 0 .8em;
 }
+
+/* ---------- Course index: a white page ----------
+   Lewis asked for a white homepage (2026-11-09). The decks keep their
+   own themes; only the index changes. Cards go light grey so they still
+   read as cards on white. */
+html:has(body.course), body.course {
+  --bg: #fff;
+  --card: #f3f5f7;
+  --card-hover: #eef1f4;
+  background: #fff;
+}
+body.course .weeks a, body.course .weeks .card {
+  box-shadow: 0 .1em .4em rgba(23,19,18,.06), 0 0 0 1px rgba(23,19,18,.05);
+}
+body.course .weeks li.soon .card { background: transparent; box-shadow: none; }
