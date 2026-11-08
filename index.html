@@ -8,6 +8,9 @@
 <meta name="apple-mobile-web-app-title" content="Leadership">
 <title>Performance-Driven Leadership — workshop decks</title>
 <meta name="description" content="極限人生企管顧問 — interactive workshop decks for a nine-lesson leadership course. English at CEFR A2, in two versions: working professionals and athletes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,900&display=swap">
 <link rel="stylesheet" href="shared/style.css">
 </head>
 <body class="course">
@@ -48,8 +51,8 @@ document.getElementById('lessons').innerHTML = STAGES.map((st, si) =>
         ${l.q ? `<span class="wk-q">${one(l.q, l.qZh || l.q)}</span>` : ''}
         ${l.meta ? `<span class="wk-meta">${one(l.meta, l.metaZh || l.meta)}</span>` : ''}
         <span class="ver">
-          <a href="${l.dir}/work/">${one('For professionals', '職場專業人士')}<span lang="${Z ? 'en' : 'zh-Hant'}">${one('職場專業人士', 'For professionals')}</span></a>
-          <a href="${l.dir}/sport/">${one('For athletes', '運動員')}<span lang="${Z ? 'en' : 'zh-Hant'}">${one('運動員', 'For athletes')}</span></a>
+          <a class="v-work" href="${l.dir}/work/">${one('For professionals', '職場專業人士')}<span lang="${Z ? 'en' : 'zh-Hant'}">${one('職場專業人士', 'For professionals')}</span></a>
+          <a class="v-sport" href="${l.dir}/sport/">${one('For athletes', '運動員')}<span lang="${Z ? 'en' : 'zh-Hant'}">${one('運動員', 'For athletes')}</span></a>
         </span></span></li>`;
   }).join('')).join('');
 applyLang();

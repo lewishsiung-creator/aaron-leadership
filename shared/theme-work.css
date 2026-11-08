@@ -138,3 +138,11 @@ h1 { line-height: 1.04; }
 #progress { background: rgba(255,255,255,.5); height: 2px; }
 #hud { color: var(--ink-faint); }
 #menu .items button.here { border-color: var(--deep); }
+
+/* UX pass */
+.s-terms .chip { border: 1px solid rgba(255,255,255,.08); border-bottom: 1px solid rgba(255,255,255,.08); border-radius: 2em; color: var(--ink); }
+.s-terms .chip::after { color: var(--deep); }
+.help-box { border-radius: 1.2em; border: 1px solid rgba(255,255,255,.08); }
+.help-box h2 { font-weight: 600; letter-spacing: -.02em; }
+.timer button { border-radius: 2em; }
+.timer button.go { color: #fff; }

@@ -113,6 +113,23 @@ copyrighted and are not used here.
 The work and sport versions use separate presenter channels, so having both
 open never makes one drive the other.
 
+## Presenting extras (UX pass, 9 November 2026)
+
+- **Swipe** left/right turns the page on phones and tablets (not when the
+  swipe starts on a diagram, video or timer).
+- **Full screen** button in the HUD where the browser allows it (not on an
+  iPhone, which has no full-screen API; hidden on phones anyway).
+- **? / ? button** opens a keys-and-gestures panel, in the current language.
+- **A refresh keeps the place**: the slide number is kept in the address
+  (`#11`), so a reload or a shared link opens on that slide.
+- **The screen stays awake** while a deck is open (Wake Lock API), from the
+  first tap or key.
+- **Timer**: Start is a filled button; at zero the clock blinks three times
+  in the accent colour and says *Time's up! / 時間到！*.
+- **Today's words** now shows its terms as cards (they used to run together
+  as small text — the `terms` type had no styling of its own).
+- **Homepage**: each version's button is a small sample of that deck's look.
+
 ## Lesson 1 — corrections to the handout
 
 Each is explained in that slide's speaker notes, in Chinese, for Aaron.

@@ -38,7 +38,13 @@
     menuHint: 'Backspace 回到剛才那一頁 · N = 在這個螢幕看備註 · P = 講者視窗',
     peek: n => `備註 · 第 ${n} 頁 · 按 N 收起`,
     say: '要說的話', nextUp: '下一頁', end: '最後一頁', back: '← 上一頁', fwd: '下一頁 →',
-    step: (a, b) => `步驟 ${a}/${b}`, mins: m => `已經 ${m} 分鐘`
+    step: (a, b) => `步驟 ${a}/${b}`, mins: m => `已經 ${m} 分鐘`,
+    up: '時間到！', full: '全螢幕', help: '操作說明',
+    helpRows: [['下一頁 / → / 空白鍵 / 點畫面', '下一步，再到下一頁'], ['上一頁 / ←', '上一步'],
+               ['左右滑動', '在手機和平板上翻頁'], ['M', '跳到某一段'], ['Backspace', '回到剛才那一頁'],
+               ['N', '在這個螢幕看備註'], ['P', '講者視窗（放在你的電腦）'], ['F', '全螢幕'],
+               ['L', '中文 / English'], ['Esc', '關閉']],
+    helpNote: '重新整理會停在同一頁。點有底線的詞可以看解釋。'
   } : {
     simple: 'In simple words', ask: 'ASK', watch: 'WATCH FOR',
     question: (n, of) => `Question ${n} of ${of}`, reveal: 'Click when the class has answered',
@@ -51,7 +57,13 @@
     menuHint: 'Backspace takes you back to where you jumped from. · N = notes on this screen · P = presenter window',
     peek: n => `Notes · slide ${n} · press N to hide`,
     say: 'Say this', nextUp: 'Next up', end: 'End of deck', back: '← Back', fwd: 'Next →',
-    step: (a, b) => `step ${a}/${b}`, mins: m => `${m} min elapsed`
+    step: (a, b) => `step ${a}/${b}`, mins: m => `${m} min elapsed`,
+    up: 'Time’s up!', full: 'full screen', help: 'Keys and gestures',
+    helpRows: [['下一頁 / → / Space / tap', 'next step, then next slide'], ['上一頁 / ←', 'back one step'],
+               ['swipe left / right', 'turn the page on a phone or tablet'], ['M', 'jump to a section'],
+               ['Backspace', 'return to where you jumped from'], ['N', 'speaker notes on this screen'],
+               ['P', 'presenter window (for your laptop)'], ['F', 'full screen'], ['L', '中文 / English'], ['Esc', 'close']],
+    helpNote: 'A refresh keeps your place. Tap an underlined word for its meaning.'
   };
 
   if (ZHMODE) {
@@ -389,8 +401,8 @@
               `<li class="step" data-step="${k}">${chips(q)}</li>`).join('')}</ul>` : ''}
             ${s.ask ? askBlock(s.ask, false) : ''}
             <div class="timer" data-mins="${s.minutes}">
-              <div class="clock">${String(s.minutes).padStart(2, '0')}:00</div>
-              <button data-timer="start">${UI.start}</button>
+              <div class="clock">${String(s.minutes).padStart(2, '0')}:00</div><div class="up">${UI.up}</div>
+              <button data-timer="start" class="go">${UI.start}</button>
               <button data-timer="reset">${UI.reset}</button>
             </div>
           </div>
@@ -525,8 +537,8 @@
             <ul class="q-list">${s.questions.map((q, k) =>
               `<li class="step" data-step="${k}">${chips(q)}</li>`).join('')}</ul>
             <div class="timer" data-mins="${s.minutes}">
-              <div class="clock">${String(s.minutes).padStart(2, '0')}:00</div>
-              <button data-timer="start">${UI.start}</button>
+              <div class="clock">${String(s.minutes).padStart(2, '0')}:00</div><div class="up">${UI.up}</div>
+              <button data-timer="start" class="go">${UI.start}</button>
               <button data-timer="reset">${UI.reset}</button>
             </div>
           </div>`;
@@ -691,6 +703,8 @@
     navNext.disabled = (idx === SLIDES.length - 1 && step === stepsFor(s));
     if (peek.classList.contains('on')) drawPeek();
     sync();
+    /* A refresh mid-workshop used to throw her back to slide 1. */
+    try { history.replaceState(null, '', '#' + (idx + 1)); } catch (e) {}
   }
 
   function next() {
@@ -1064,7 +1078,7 @@
     }
     const k = e.key;
     if (k === 'Escape') {
-      closeMenu(); closeChip(); closeZoom(); peek.classList.remove('on'); return;
+      closeMenu(); closeChip(); closeZoom(); toggleHelp(false); peek.classList.remove('on'); return;
     }
     if (k === 'ArrowRight' || k === ' ' || k === 'PageDown') { e.preventDefault(); next(); return; }
     if (k === 'ArrowLeft' || k === 'PageUp') { e.preventDefault(); prev(); return; }
@@ -1080,6 +1094,7 @@
     if (lower === 'n') { peek.classList.toggle('on'); if (peek.classList.contains('on')) drawPeek(); return; }
     if (lower === 'p') { openPresenter(); return; }
     if (lower === 'l') { switchLang('#' + (idx + 1)); return; }
+    if (k === '?') { toggleHelp(!help.classList.contains('on')); return; }
     if (lower === 'f') {
       if (document.fullscreenElement) document.exitFullscreen();
       else document.documentElement.requestFullscreen();
@@ -1100,6 +1115,65 @@
   applyLang();
   menu.addEventListener('click', e => { if (e.target === menu) closeMenu(); });
   lightbox.addEventListener('click', closeZoom);
+
+  /* ---------- keys and gestures panel (? key, ? button) ---------- */
+  const help = el('div', '', '');
+  help.id = 'help';
+  help.innerHTML = `<div class="help-box"><h2>${UI.help}</h2>
+    <dl>${UI.helpRows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
+    <p>${UI.helpNote}</p></div>`;
+  document.body.appendChild(help);
+  const toggleHelp = on => help.classList.toggle('on', on);
+  help.addEventListener('click', e => { e.stopPropagation(); toggleHelp(false); });
+
+  /* ---------- swipe to turn the page ----------
+     Phones and tablets expect it. Swipes that start on a diagram, a video
+     or an open panel are left alone. */
+  let touch = null;
+  stage.addEventListener('touchstart', e => {
+    if (e.touches.length !== 1 || e.target.closest('.demo, .vid, .timer')) { touch = null; return; }
+    touch = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now() };
+  }, { passive: true });
+  stage.addEventListener('touchend', e => {
+    if (!touch) return;
+    const dx = e.changedTouches[0].clientX - touch.x, dy = e.changedTouches[0].clientY - touch.y;
+    const quick = Date.now() - touch.t < 800;
+    touch = null;
+    if (!quick || Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    closeChip();
+    dx < 0 ? next() : prev();
+  }, { passive: true });
+
+  /* ---------- HUD extras: full screen and help ----------
+     Added here, not in each page, so every lesson gets them. Full screen
+     is offered only where the browser can do it (not on an iPhone). */
+  const hud = document.getElementById('hud');
+  const countEl = document.getElementById('count');
+  const toggleFull = () => {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen?.();
+  };
+  if (document.fullscreenEnabled) {
+    const fb = el('button', '', UI.full);
+    fb.id = 'btn-full'; fb.title = 'F';
+    fb.onclick = e => { e.stopPropagation(); toggleFull(); };
+    hud.insertBefore(fb, countEl);
+  }
+  const hb = el('button', '', '?');
+  hb.id = 'btn-help'; hb.title = UI.help;
+  hb.onclick = e => { e.stopPropagation(); toggleHelp(!help.classList.contains('on')); };
+  hud.insertBefore(hb, countEl);
+
+  /* ---------- keep the screen awake while presenting ----------
+     A laptop or iPad going dark mid-activity is the commonest small
+     disaster in a workshop. Asked for on the first tap or key. */
+  let wake = null;
+  const keepAwake = async () => {
+    try { if ('wakeLock' in navigator && !wake) { wake = await navigator.wakeLock.request('screen'); wake.addEventListener('release', () => { wake = null; }); } } catch (e) {}
+  };
+  document.addEventListener('pointerdown', keepAwake, { once: true });
+  document.addEventListener('keydown', keepAwake, { once: true });
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && wake === null) keepAwake(); });
 
   /* ---------- go ---------- */
   buildMenu();

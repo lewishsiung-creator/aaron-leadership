@@ -184,3 +184,13 @@ html[lang="zh-Hant"] .vid-watch .tag, html[lang="zh-Hant"] .s-quiz .qnum {
 /* A Chinese title is a short run of wide glyphs: let it use the width. */
 html[lang="zh-Hant"] .s-title h1 { font-size: 5.6em; max-width: none; line-height: 1.05; }
 html[lang="zh-Hant"] .s-section h1 { max-width: none; line-height: 1.1; }
+
+/* UX pass: square everything the base gives round corners */
+.s-terms .chip { border-radius: 0; border-bottom: 3px solid var(--deep); }
+.help-box { border-radius: 0; border-top: .3em solid var(--deep); }
+.help-box h2 { font-family: var(--display); font-style: italic; text-transform: uppercase; }
+html[lang="zh-Hant"] .help-box h2 { font-style: normal; }
+.timer button.go { color: #0b0b0b; }
+.timer .up { font-family: var(--display); font-style: italic; font-weight: 900; text-transform: uppercase; font-size: 1.8em; }
+html[lang="zh-Hant"] .timer .up { font-style: normal; }
+#btn-help { border-radius: 0; }

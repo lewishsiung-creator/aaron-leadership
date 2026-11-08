@@ -1427,3 +1427,79 @@ html[lang="zh-Hant"] .chip::after { content: 'EN'; font-size: .45em; letter-spac
 /* The HUD gains a language button; a phone has no room for the presenter
    link, and no second screen to put it on. */
 @media (max-width: 700px) { #btn-presenter { display: none; } }
+
+/* =================================================================
+   UX pass, 2026-11-09
+   ================================================================= */
+
+/* "Today's words" (type terms) never had the end slide's pill styling,
+   so its words ran together as one line of small text. */
+.s-terms .termgrid { display: flex; flex-wrap: wrap; gap: .7em; margin-top: 1.8em; max-width: 46em; }
+.s-terms .chip, .s-end .chip {
+  font-size: 1.45em; background: var(--card);
+  border: 1px solid transparent; border-bottom: 2px solid var(--deep);
+  border-radius: .45em; padding: .45em .85em;
+}
+.s-terms .chip:hover, .s-end .chip:hover { background: var(--card-hover); }
+
+/* Timer: a filled Start, and a time's-up nobody can miss. */
+.timer { flex-wrap: wrap; }
+.timer button { color: var(--ink); }
+.timer button.go { background: var(--deep); color: var(--on-accent); border-color: var(--deep); font-weight: 600; }
+.timer button.go:hover { background: var(--deeper); border-color: var(--deeper); }
+.timer .up {
+  display: none; font-weight: 700; font-size: 1.3em; color: var(--deep);
+}
+.timer.done .up { display: block; }
+.timer.done .clock { color: var(--deep); animation: timeup 1s steps(2, jump-none) 3; }
+@keyframes timeup { 50% { opacity: .2; } }
+@media (prefers-reduced-motion: reduce) { .timer.done .clock { animation: none; } }
+
+/* Keys and gestures panel */
+#help {
+  position: fixed; inset: 0; z-index: 75; display: none;
+  align-items: center; justify-content: center;
+  background: rgba(0,0,0,.55); padding: 4vh 4vw;
+}
+#help.on { display: flex; }
+.help-box {
+  background: var(--card); color: var(--ink); border-radius: .8em;
+  padding: 1.6em 1.8em; max-width: 34em; width: 100%;
+  box-shadow: 0 1.5em 4em rgba(0,0,0,.45); font-size: 16px;
+  max-height: 92vh; overflow-y: auto;
+}
+.help-box h2 { font-size: 1.6em; margin-bottom: .8em; }
+.help-box dl { display: grid; grid-template-columns: auto 1fr; gap: .55em 1.2em; }
+.help-box dt { font-weight: 700; color: var(--deep); white-space: nowrap; }
+.help-box dd { color: var(--card-dim); }
+.help-box p { margin-top: 1.1em; font-size: .92em; color: var(--card-dim); }
+
+/* The HUD's ? button reads as a button */
+#btn-help {
+  width: 1.7em; height: 1.7em; border-radius: 50%;
+  border: 1px solid currentColor !important; line-height: 1; padding: 0 !important;
+}
+@media (max-width: 700px) { #btn-full { display: none; } }
+
+/* Homepage: each version's button is a small sample of its deck's look,
+   so the choice is visible before it is clicked. */
+.weeks .ver a.v-work, .weeks .ver a.v-sport { background: #000; padding: .75em 1.3em; }
+.weeks .ver a.v-work {
+  color: #f5f5f7; border-radius: 2em; font-weight: 600; letter-spacing: -.01em;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', 'PingFang TC', sans-serif;
+}
+.weeks .ver a.v-work span { color: #a1a1a6; opacity: 1; }
+.weeks .ver a.v-sport {
+  color: #d4ff00; border-radius: 0; text-transform: uppercase; font-size: 1.05em;
+  font-family: 'Barlow Condensed', 'Avenir Next Condensed', Impact, 'PingFang TC', sans-serif;
+  font-style: italic; font-weight: 900; letter-spacing: .01em;
+}
+.weeks .ver a.v-sport span { color: #fff; opacity: .85; font-style: normal; text-transform: none; font-weight: 600; font-family: 'PingFang TC', -apple-system, sans-serif; font-size: .85em; }
+html[lang="zh-Hant"] .weeks .ver a.v-sport { font-style: normal; }
+.weeks .ver a.v-work:hover { background: #1d1d1f; }
+.weeks .ver a.v-sport:hover { background: #1a1a1a; }
+.weeks .ver a { white-space: nowrap; }
+@media (max-width: 520px) {
+  .weeks .ver { flex-direction: column; }
+  .weeks .ver a { text-align: center; }
+}
