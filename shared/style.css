@@ -1,0 +1,1392 @@
+/* ------------------------------------------------------------------
+   Performance-Driven Leadership — deck styling
+
+   The engine and this stylesheet began as the ones built for Vicky's
+   art-history course; the colours were moved to the sea blue of the
+   cover of Aaron's Lesson 1 handout:
+     #6fa9d4  the sky-and-sea blue (was her slide green)
+     #171312  a warm near-black for text
+     #f7f0df  cream, for cards
+   ------------------------------------------------------------------ */
+
+:root {
+  --bg:       #6fa9d4;   /* sea blue, from the handout cover */
+  --deep:     #0f3350;   /* the same blue, pushed down — rules, panels */
+  --deeper:   #0a2338;
+  --cream:    #f7f0df;   /* from her title slide */
+  --ink:      #171312;   /* her text colour */
+  --ink-dim:  #102a40;
+  --ink-faint:#13324a;
+  --rule:     rgba(23,19,18,.18);
+  /* One easing curve for the whole deck. Every transition used the
+     browser's generic `ease`, which starts and ends at slightly
+     different rates in different engines; a named curve makes the
+     motion read as one system rather than nineteen separate guesses. */
+  --ease:     cubic-bezier(.32, .08, .24, 1);
+  --serif:    'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, 'Songti TC', serif;
+  --sans:     -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ---------- Touch and pointer behaviour ----------
+   Phone and iPad polish that costs nothing on a projector:
+   no grey flash when a control is tapped, no 300ms wait before a tap
+   registers, no rubber-band bounce dragging the page around, and no
+   text selection when she double-taps a button mid-sentence. */
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+#nav, #hud, #progress, #menu .sec-head, .vid-play {
+  -webkit-user-select: none; user-select: none;
+}
+button, a, .chip, .rank-card, .match-card, .vote-opt, summary {
+  touch-action: manipulation;
+}
+body.course { overscroll-behavior-y: contain; }
+img { -webkit-user-drag: none; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Everything scales off this. Set in JS from the viewport. */
+#stage { font-size: 16px; }
+
+/* ---------- Slide frame ---------- */
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Bottom padding reserves the strip the 上一頁 / 下一頁 buttons sit in. */
+  padding: 5vh 7vw 9vh;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .28s var(--ease);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+
+/* Build steps: anything not yet revealed */
+.step {
+  opacity: 0;
+  transform: translateY(.5em);
+  transition: opacity .35s var(--ease), transform .35s var(--ease);
+}
+.step.shown { opacity: 1; transform: none; }
+
+/* ---------- Shared type ---------- */
+.kicker {
+  font-size: .95em;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--deeper);
+  margin-bottom: 1.1em;
+  font-weight: 700;
+}
+h1 {
+  font-family: var(--serif);
+  font-size: 3.4em;
+  line-height: 1.08;
+  font-weight: 400;
+  letter-spacing: -.01em;
+}
+h2 {
+  font-family: var(--serif);
+  font-size: 2.5em;
+  line-height: 1.12;
+  font-weight: 400;
+  margin-bottom: .1em;
+}
+.zh-title {
+  font-size: 1.05em;
+  color: var(--deeper);
+  letter-spacing: .16em;
+  margin-bottom: 1.3em;
+}
+.sub {
+  font-size: 1.5em;
+  color: var(--ink-dim);
+  line-height: 1.4;
+  margin-top: .8em;
+  max-width: 24em;
+}
+
+/* ---------- Title slide ---------- */
+.s-title { justify-content: center; }
+.s-title .meta {
+  font-size: .95em; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--deeper); margin-bottom: 2.2em;
+}
+.s-title h1 { font-size: 4.6em; max-width: 15em; }
+.s-title .sub {
+  font-size: 1.8em; margin-top: 1em;
+  color: var(--cream);
+  text-shadow: 0 1px 0 rgba(23,19,18,.25);
+}
+
+/* ---------- One-word slide ---------- */
+.s-word { align-items: center; justify-content: center; }
+.s-word .big {
+  font-family: var(--serif);
+  font-size: 12em;
+  line-height: 1;
+  letter-spacing: -.03em;
+  color: var(--cream);
+  text-shadow: 0 2px 0 rgba(23,19,18,.18);
+}
+
+/* ---------- Section / question slide ---------- */
+.s-section { justify-content: center; }
+.s-section h1 { max-width: 16em; }
+
+/* ---------- Bullets ---------- */
+.s-bullets ul { list-style: none; margin-top: 1.6em; }
+.s-bullets li { margin-bottom: 1.15em; max-width: 40em; }
+.s-bullets .head {
+  font-size: 1.45em;
+  line-height: 1.32;
+  font-weight: 500;
+}
+.s-bullets .body {
+  font-size: 1.12em;
+  line-height: 1.5;
+  color: var(--ink-dim);
+  margin-top: .22em;
+  max-width: 36em;
+}
+
+/* ---------- Quote slide ---------- */
+.s-quote .lead { font-size: 1.25em; color: var(--ink-dim); margin-bottom: 1.2em; }
+.s-quote blockquote {
+  font-family: var(--serif);
+  font-size: 1.55em;
+  line-height: 1.42;
+  color: var(--ink);
+  border-left: 3px solid var(--deeper);
+  padding-left: .85em;
+  max-width: 26em;
+}
+.s-quote cite {
+  display: block;
+  font-style: normal;
+  font-size: .95em;
+  color: var(--deeper);
+  margin-top: .9em;
+  padding-left: 1.05em;
+  max-width: 34em;
+  line-height: 1.45;
+}
+.plain {
+  margin-top: 1.6em;
+  background: var(--cream);
+  border-radius: .5em;
+  padding: 1.2em 1.4em;
+  max-width: 34em;
+  color: var(--ink);
+  box-shadow: 0 .6em 1.8em rgba(23,19,18,.18);
+}
+.plain .plain-label {
+  font-size: .8em; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--deep); font-weight: 700; margin-bottom: .7em;
+}
+.plain p { font-size: 1.14em; line-height: 1.52; margin-bottom: .55em; }
+.plain p:last-child { margin-bottom: 0; }
+.plain .chip { border-bottom-color: var(--deep); }
+.plain .chip::after { color: var(--deep); }
+.plain .chip:hover { background: rgba(30,90,140,.16); }
+
+/* A quote slide carrying a photo of its source document */
+.s-quote:has(.q-doc) { flex-direction: row; align-items: center; gap: 4vw; }
+.s-quote .q-body { flex: 1 1 60%; }
+.s-quote .q-doc {
+  flex: 1 1 40%; max-width: 22em;
+  display: flex; flex-direction: column; align-items: center;
+}
+.s-quote .q-doc img {
+  max-width: 100%; max-height: 62vh; object-fit: contain;
+  cursor: zoom-in; border-radius: 2px;
+  box-shadow: 0 1.2em 3em rgba(23,19,18,.42);
+}
+.s-quote .q-doc .doc-lbl {
+  font-size: .88em; color: var(--deeper);
+  margin-top: .8em; text-align: center; line-height: 1.4;
+}
+
+/* ---------- ASK banner ---------- */
+.ask {
+  margin-top: 1.5em;
+  display: flex;
+  align-items: baseline;
+  gap: .7em;
+  max-width: 32em;
+}
+.ask .tag {
+  flex: none;
+  font-size: .78em; letter-spacing: .18em; font-weight: 700;
+  color: var(--cream); background: var(--deeper);
+  padding: .25em .6em; border-radius: .25em;
+}
+.ask .q {
+  font-size: 1.3em; line-height: 1.38;
+  color: var(--deeper); font-weight: 500;
+}
+
+/* ---------- Artwork slide ---------- */
+.s-artwork { flex-direction: row; align-items: center; gap: 4vw; padding: 4vh 5vw 9vh; }
+.s-artwork .art {
+  flex: 1 1 58%;
+  height: 76vh;
+  display: flex; align-items: center; justify-content: center;
+}
+.s-artwork .art img {
+  max-width: 100%; max-height: 100%;
+  object-fit: contain;
+  cursor: zoom-in;
+  border-radius: 2px;
+  box-shadow: 0 1.2em 3em rgba(23,19,18,.42);
+}
+.s-artwork .side { flex: 1 1 42%; max-width: 26em; }
+.s-artwork h2 { font-size: 2em; }
+.s-artwork .cap {
+  font-size: .98em; color: var(--deeper);
+  line-height: 1.45; margin-top: .5em; margin-bottom: 1.4em;
+}
+.s-artwork .points { list-style: none; }
+.s-artwork .points li {
+  font-size: 1.14em; line-height: 1.5;
+  margin-bottom: .85em; padding-left: 1em;
+  border-left: 2px solid var(--rule);
+}
+.zoom-hint {
+  font-size: .82em; color: var(--deeper);
+  margin-top: 1.2em; letter-spacing: .04em;
+}
+
+/* ---------- Gallery slide ----------
+   An artwork slide whose picture side is a 2x2. Used where the example
+   is not one object but a run of images — a film, a series, a comic. */
+.s-gallery { flex-direction: row; align-items: center; gap: 4vw; padding: 4vh 5vw 9vh; }
+.s-gallery .gal {
+  flex: 1 1 60%;
+  height: 76vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: 1fr;
+  gap: 1.2vh 1.2vw;
+  align-content: center;
+}
+.s-gallery .gal figure {
+  min-height: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: .35em;
+}
+/* The image hugs its own frame rather than filling the grid cell, so the
+   shadow lands on the picture and not on empty space around it. Nothing
+   is cropped either — these are film frames, and cutting one throws away
+   the half of the picture the question is about. */
+/* The picture takes the space the caption does not want. With
+   max-height:100% it filled the whole cell instead and sat on top of
+   its own caption. */
+.s-gallery .gal img {
+  flex: 1 1 auto; min-height: 0;
+  max-width: 100%; width: auto; height: auto;
+  object-fit: contain;
+  cursor: zoom-in;
+  border-radius: 2px;
+  box-shadow: 0 .8em 2em rgba(23,19,18,.38);
+}
+.s-gallery .gal figcaption {
+  flex: 0 0 auto;
+  font-size: .72em; color: var(--deeper); line-height: 1.3; text-align: center;
+}
+.s-gallery .side { flex: 1 1 40%; max-width: 25em; }
+/* A gallery with no bullet points — "just the pictures" — left half the
+   slide empty. Give the images the room instead. */
+.s-gallery:has(.points:empty) .gal { flex: 1 1 76%; }
+.s-gallery:has(.points:empty) .side { flex: 0 1 24%; }
+.s-gallery h2 { font-size: 2em; }
+.s-gallery .zh-title { font-size: 1.05em; color: var(--deep); margin-top: .15em; }
+.s-gallery .cap {
+  font-size: .95em; color: var(--deeper);
+  line-height: 1.45; margin-top: .5em; margin-bottom: 1.3em;
+}
+.s-gallery .points { list-style: none; }
+.s-gallery .points li {
+  font-size: 1.1em; line-height: 1.5;
+  margin-bottom: .8em; padding-left: 1em;
+  border-left: 2px solid var(--rule);
+}
+
+/* ---------- Video slide ----------
+   Same two-column shape as an artwork slide. The player is a facade
+   until she clicks it. */
+.s-video { flex-direction: row; align-items: center; gap: 4vw; padding: 4vh 5vw 9vh; }
+.s-video .vid { flex: 1 1 60%; min-width: 0; }
+.s-video .side { flex: 1 1 40%; max-width: 24em; }
+.s-video h2 { font-size: 2em; }
+.s-video .cap {
+  font-size: .98em; color: var(--deeper);
+  line-height: 1.45; margin-top: .5em; margin-bottom: 1.4em;
+}
+.s-video .points { list-style: none; }
+.s-video .points li {
+  font-size: 1.14em; line-height: 1.5;
+  margin-bottom: .85em; padding-left: 1em;
+  border-left: 2px solid var(--rule);
+}
+
+.vid-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  background: #0c1a28 center/cover no-repeat;
+  border-radius: .3em;
+  overflow: hidden;
+  box-shadow: 0 1.2em 3em rgba(23,19,18,.42);
+  cursor: pointer;
+}
+.vid-frame iframe, .vid-frame video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; border: 0;
+  background: #000;
+}
+.vid-play {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(12,26,40,.35);
+  border: 0; cursor: pointer;
+  transition: background .18s var(--ease);
+}
+.vid-frame:hover .vid-play { background: rgba(12,26,40,.18); }
+.vid-play span {
+  display: flex; align-items: center; justify-content: center;
+  width: 2.6em; height: 2.6em; border-radius: 50%;
+  background: var(--cream); color: var(--deep);
+  font-size: 1.6em; line-height: 1;
+  padding-left: .12em;
+  box-shadow: 0 .3em 1em rgba(23,19,18,.4);
+}
+
+.vid-watch {
+  margin-top: 1.1em;
+  display: flex; align-items: baseline; gap: .7em;
+  font-size: 1.2em; line-height: 1.4;
+  color: var(--deeper); font-weight: 500;
+}
+.vid-watch .tag {
+  flex: none;
+  font-size: .62em; letter-spacing: .16em; font-weight: 700;
+  color: var(--cream); background: var(--deeper);
+  padding: .35em .6em; border-radius: .25em;
+}
+.s-video .zoom-hint a { color: var(--deeper); }
+
+/* ---------- Compare slide ---------- */
+.s-compare { padding: 4vh 5vw 9vh; }
+.s-compare h2 { text-align: center; margin-bottom: .6em; }
+.s-compare .ask { margin: 0 auto 1em; }
+.compare-wrap {
+  flex: 1;
+  display: flex; gap: 2vw;
+  align-items: center; justify-content: center;
+  min-height: 0;
+}
+.compare-pane {
+  flex: 1 1 50%;
+  height: 54vh;
+  display: flex; flex-direction: column; align-items: center;
+  transition: opacity .3s var(--ease), filter .3s var(--ease);
+}
+/* The image takes whatever the label leaves, rather than a fixed
+   subtraction — otherwise a short pane starves it. */
+.compare-pane img {
+  flex: 1 1 auto; min-height: 0;
+  max-width: 100%;
+  object-fit: contain; cursor: zoom-in;
+  box-shadow: 0 .9em 2.4em rgba(23,19,18,.4);
+}
+.compare-pane .lbl {
+  flex: none;
+  font-size: .98em; color: var(--ink-dim);
+  margin-top: .9em; text-align: center; line-height: 1.4;
+}
+.compare-pane.dim { opacity: .3; filter: saturate(.35); }
+.compare-note {
+  margin: 1.1em auto 0;
+  max-width: 40em; text-align: center;
+  font-size: 1.25em; line-height: 1.45;
+  min-height: 2.9em; color: var(--ink);
+}
+.compare-note .side-tag {
+  display: inline-block;
+  font-size: .62em; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--cream); background: var(--deeper);
+  padding: .3em .55em; border-radius: .25em;
+  margin-right: .8em; vertical-align: middle;
+}
+
+/* ---------- Two-column ---------- */
+.s-twocol .cols { display: flex; gap: 4vw; margin-top: 1.8em; }
+.s-twocol .col { flex: 1 1 50%; }
+.s-twocol .col h3 {
+  font-family: var(--serif); font-size: 2.1em; font-weight: 400;
+}
+.s-twocol .col .zh { color: var(--deeper); letter-spacing: .16em; margin: .2em 0 .9em; }
+.s-twocol .col .lead {
+  font-size: 1.1em; color: var(--ink-dim); line-height: 1.5;
+  padding-bottom: 1em; margin-bottom: 1em; border-bottom: 1px solid var(--rule);
+}
+.s-twocol .col ul { list-style: none; }
+.s-twocol .col li {
+  font-size: 1.2em; line-height: 1.45; margin-bottom: .75em;
+  padding-left: .9em; position: relative;
+}
+.s-twocol .col li::before {
+  content: '·'; position: absolute; left: 0; color: var(--deeper); font-weight: 700;
+}
+
+/* ---------- Break slide (the chain that snaps) ---------- */
+.s-break .chain {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: .5em .35em; margin: 1.4em 0;
+  max-width: 44em;
+}
+.s-break .chain span {
+  font-size: 1.15em; padding: .3em .6em;
+  background: var(--cream); border-radius: .3em;
+  transition: opacity .4s var(--ease), transform .4s var(--ease);
+}
+.s-break .chain i {
+  color: var(--deeper); font-style: normal; font-size: 1em;
+}
+.s-break.broken .chain span { opacity: .22; transform: translateY(.35em) rotate(-1.5deg); }
+.s-break .chain-label { font-size: 1.15em; color: var(--ink-dim); max-width: 34em; }
+.s-break .after { margin-top: 1.4em; max-width: 34em; }
+.s-break .after .after-label {
+  font-size: 1.5em; color: var(--deeper); margin-bottom: .7em;
+  font-family: var(--serif);
+}
+.s-break .after ul { list-style: none; }
+.s-break .after li {
+  font-size: 1.18em; line-height: 1.5; margin-bottom: .5em;
+  padding-left: 1em; border-left: 2px solid var(--deeper);
+}
+
+/* ---------- Activity slide (with timer) ---------- */
+.s-activity { flex-direction: row; gap: 4vw; align-items: center; }
+.s-activity .left { flex: 1 1 55%; }
+.s-activity .right { flex: 1 1 45%; max-width: 24em; }
+.s-activity ol, .s-activity ul { margin: 1.2em 0 0 1.1em; }
+.s-activity li { font-size: 1.24em; line-height: 1.5; margin-bottom: .6em; }
+/* Shared by activity and ranking slides. */
+.q-list { list-style: none; margin: 1.2em 0 0; }
+.q-list li {
+  font-size: 1.18em; line-height: 1.45;
+  padding-left: 1em; border-left: 2px solid var(--deeper);
+  color: var(--deeper); font-weight: 500; margin-bottom: 1em;
+}
+
+.tl { list-style: none; margin: 0; }
+.tl li {
+  display: flex; gap: .9em; align-items: baseline;
+  font-size: 1.05em; margin-bottom: .45em;
+  padding-bottom: .45em; border-bottom: 1px solid var(--rule);
+}
+.tl .yr { flex: none; width: 3.4em; color: var(--deeper); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.timer {
+  margin-top: 1.6em; display: flex; align-items: center; gap: 1em;
+}
+.timer .clock {
+  font-family: var(--serif); font-size: 4.2em; line-height: 1;
+  font-variant-numeric: tabular-nums; letter-spacing: -.02em;
+  color: var(--ink);
+}
+.timer.running .clock { color: var(--cream); text-shadow: 0 1px 0 rgba(23,19,18,.25); }
+.timer.done .clock { color: var(--deeper); }
+.timer button {
+  font: inherit; font-size: .95em;
+  background: transparent; color: var(--ink-dim);
+  border: 1px solid var(--rule); border-radius: .35em;
+  padding: .5em .95em; cursor: pointer;
+}
+.timer button:hover { background: var(--cream); border-color: var(--cream); }
+
+/* ---------- Concept grid (Attitude / Concept / Form / Technique) ---------- */
+.s-grid .cells {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1.1em; margin-top: 1.5em; max-width: 52em;
+}
+.s-grid .cell {
+  background: var(--cream); border-radius: .5em;
+  padding: 1.1em 1.3em;
+  box-shadow: 0 .5em 1.5em rgba(23,19,18,.16);
+}
+.s-grid .cell-label {
+  font-size: .78em; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--deep); font-weight: 700; margin-bottom: .5em;
+}
+.s-grid .cell-head { font-size: 1.24em; line-height: 1.35; font-weight: 500; }
+.s-grid .cell-body {
+  font-size: 1.02em; line-height: 1.5; color: #44505c; margin-top: .35em;
+}
+.s-grid .cell .chip { border-bottom-color: var(--deep); }
+.s-grid .cell .chip::after { color: var(--deep); }
+.s-grid .cell .chip:hover { background: rgba(30,90,140,.16); }
+
+/* ---------- Vote board ---------- */
+.s-vote .vote-q {
+  font-size: 1.3em; line-height: 1.4; margin-bottom: 1.2em;
+  max-width: 40em; color: var(--ink-dim);
+}
+.vote-opts { display: flex; gap: 1em; flex-wrap: wrap; max-width: 56em; }
+.vote-opt {
+  position: relative;
+  flex: 1 1 0; min-width: 11em;
+  font: inherit; text-align: left; cursor: pointer;
+  background: var(--cream); color: var(--ink);
+  border: 2px solid transparent; border-radius: .5em;
+  padding: 1.1em 1.2em 1.2em;
+  box-shadow: 0 .4em 1.3em rgba(23,19,18,.16);
+  transition: transform .12s var(--ease), border-color .15s var(--ease);
+}
+.vote-opt:hover { transform: translateY(-.15em); border-color: var(--deeper); }
+.vote-letter {
+  display: block; font-size: .78em; letter-spacing: .18em;
+  font-weight: 700; color: var(--deep);
+}
+.vote-label { display: block; font-size: 1.2em; line-height: 1.3; margin: .3em 0 .5em; }
+.vote-count {
+  display: block; font-family: var(--serif);
+  font-size: 2.8em; line-height: 1; color: var(--deeper);
+  font-variant-numeric: tabular-nums;
+}
+.vote-minus {
+  position: absolute; right: .5em; bottom: .45em;
+  width: 1.7em; height: 1.7em; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1em; color: var(--deep);
+  background: rgba(23,19,18,.07);
+  opacity: 0; transition: opacity .15s var(--ease);
+}
+.vote-opt:hover .vote-minus { opacity: 1; }
+.vote-minus:hover { background: rgba(23,19,18,.16); }
+
+.vote-rounds { margin-top: 1.2em; max-width: 56em; }
+.vote-round {
+  display: flex; gap: 1.4em; align-items: baseline;
+  font-size: 1.05em; padding: .45em 0;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-dim);
+}
+.vote-round .vr-label {
+  flex: none; width: 6em; font-weight: 600; color: var(--deeper);
+}
+.vote-round .vr-cell { font-variant-numeric: tabular-nums; }
+.vote-round .vr-cell b { color: var(--deep); }
+
+.vote-tools { margin-top: 1.2em; display: flex; align-items: center; gap: .8em; flex-wrap: wrap; }
+.vote-tools button {
+  font: inherit; font-size: .95em;
+  background: transparent; color: var(--ink-dim);
+  border: 1px solid var(--rule); border-radius: .35em;
+  padding: .45em .9em; cursor: pointer;
+}
+.vote-tools button:hover { background: var(--cream); border-color: var(--cream); }
+.vote-hint { font-size: .88em; color: var(--deeper); }
+
+/* ---------- Matching board ---------- */
+.s-match .match-task {
+  font-size: 1.15em; line-height: 1.45; color: var(--ink-dim);
+  margin-bottom: 1.1em; max-width: 44em;
+}
+.match-cols {
+  display: flex; gap: 2.5vw; align-items: flex-start;
+  max-width: 62em;
+}
+.match-side { list-style: none; flex: 1 1 0; min-width: 0; }
+.match-side li { margin-bottom: .45em; }
+.match-card {
+  position: relative;
+  width: 100%; text-align: left;
+  font: inherit; font-size: 1.02em; line-height: 1.35;
+  background: var(--cream); color: var(--ink);
+  border: 2px solid transparent; border-radius: .4em;
+  padding: .6em 1em .6em 2.6em;
+  cursor: pointer;
+  box-shadow: 0 .3em 1em rgba(23,19,18,.14);
+  transition: border-color .15s var(--ease), opacity .3s var(--ease), transform .1s var(--ease);
+}
+.match-card:hover { transform: translateY(-1px); }
+.match-card.picked { border-color: var(--deeper); }
+.match-badge {
+  position: absolute; left: .6em; top: 50%; transform: translateY(-50%);
+  width: 1.55em; height: 1.55em; border-radius: 50%;
+  background: var(--deeper); color: var(--cream);
+  font-size: .92em; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .2s var(--ease);
+}
+.match-card.paired .match-badge { opacity: 1; }
+
+/* Nothing is judged until she reveals. Then the pairs that belong
+   together are marked — and the rest simply fade, never marked wrong. */
+.s-match.revealed .match-card { opacity: .42; }
+.s-match.revealed .match-card.together {
+  opacity: 1; border-color: var(--deeper);
+  box-shadow: 0 .5em 1.4em rgba(23,19,18,.24);
+}
+.match-tools { margin-top: 1.2em; display: flex; align-items: center; gap: 1em; }
+.match-tools button {
+  font: inherit; font-size: .95em;
+  background: transparent; color: var(--ink-dim);
+  border: 1px solid var(--rule); border-radius: .35em;
+  padding: .45em .9em; cursor: pointer;
+}
+.match-tools button:hover { background: var(--cream); border-color: var(--cream); }
+.match-hint { font-size: .88em; color: var(--deeper); }
+
+/* ---------- Flow diagram ---------- */
+.s-flow .stages {
+  display: flex; align-items: stretch; flex-wrap: wrap;
+  gap: .8em; margin-top: 1.8em; max-width: 56em;
+}
+.s-flow .stage {
+  flex: 1 1 0; min-width: 8.5em;
+  background: var(--cream); border-radius: .5em;
+  padding: 1.1em 1.2em;
+  box-shadow: 0 .5em 1.5em rgba(23,19,18,.16);
+}
+.s-flow .stage-head {
+  font-size: 1.18em; line-height: 1.3; font-weight: 600;
+  margin-bottom: .45em;
+}
+.s-flow .stage-body { font-size: 1em; line-height: 1.45; color: #44505c; }
+.s-flow .stage-arrow {
+  align-self: center; flex: none;
+  font-style: normal; font-size: 1.6em; color: var(--deeper);
+}
+.s-flow .stage-foot {
+  margin-top: 1.6em; font-size: 1.1em; color: var(--ink-dim);
+  max-width: 40em; line-height: 1.5;
+}
+.s-flow .stage .chip { border-bottom-color: var(--deep); }
+.s-flow .stage .chip::after { color: var(--deep); }
+
+/* ---------- Timeline slide ---------- */
+.s-timeline .stops {
+  list-style: none; margin-top: 1.8em; max-width: 52em;
+  display: flex; gap: 1em; align-items: stretch; flex-wrap: wrap;
+}
+.s-timeline .stop {
+  flex: 1 1 0; min-width: 10em;
+  border-top: 3px solid var(--deeper);
+  padding-top: .9em;
+}
+.s-timeline .stop-when {
+  font-size: 1.1em; font-weight: 700; color: var(--deeper);
+  margin-bottom: .5em; font-variant-numeric: tabular-nums;
+}
+.s-timeline .stop-what { font-size: 1.08em; line-height: 1.5; }
+
+/* ---------- Ranking board ---------- */
+.s-rank { flex-direction: row; gap: 3vw; align-items: center; }
+.s-rank .left { flex: 1 1 68%; min-width: 0; }
+.s-rank .right { flex: 1 1 32%; min-width: 0; max-width: 20em; }
+.s-rank .rank-task {
+  font-size: 1.3em; line-height: 1.4; margin-bottom: 1.1em; max-width: 26em;
+}
+/* align-items: flex-start, or every card stretches to the tallest one. */
+.rank-cards { display: flex; gap: 1em; flex-wrap: wrap; align-items: flex-start; }
+.rank-card {
+  position: relative;
+  font: inherit; cursor: pointer;
+  background: var(--cream); border: 2px solid transparent; border-radius: .5em;
+  padding: .9em .9em .7em;
+  width: 9.4em;
+  display: flex; flex-direction: column; align-items: center; gap: .6em;
+  box-shadow: 0 .5em 1.5em rgba(23,19,18,.16);
+  transition: border-color .2s var(--ease), transform .2s var(--ease);
+}
+.rank-card:hover { transform: translateY(-.15em); }
+/* The image box and the emoji box must be the same height, so the four
+   cards line up. The emoji is sized on an inner span — sizing it on the
+   box itself would make its own `height: em` compound with its font-size. */
+.rank-card img,
+.rank-glyph { width: 100%; height: 6.6em; object-fit: contain; }
+.rank-glyph { display: flex; align-items: center; justify-content: center; }
+.rank-glyph .g { font-size: 5.2em; line-height: 1; }
+.rank-lbl { font-size: .95em; color: var(--ink); text-align: center; line-height: 1.3; }
+.rank-card.ranked { border-color: var(--deeper); }
+.rank-badge {
+  position: absolute; top: -.6em; left: -.6em;
+  width: 1.9em; height: 1.9em; border-radius: 50%;
+  background: var(--deeper); color: var(--cream);
+  font-size: 1.05em; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: scale(.6);
+  transition: opacity .2s var(--ease), transform .2s var(--ease);
+}
+.rank-card.ranked .rank-badge { opacity: 1; transform: none; }
+.rank-tools { margin-top: 1.2em; display: flex; align-items: center; gap: 1em; }
+.rank-tools button {
+  font: inherit; font-size: .95em;
+  background: transparent; color: var(--ink-dim);
+  border: 1px solid var(--rule); border-radius: .35em;
+  padding: .45em .9em; cursor: pointer;
+}
+.rank-tools button:hover { background: var(--cream); border-color: var(--cream); }
+.rank-hint { font-size: .88em; color: var(--deeper); }
+
+/* ---------- Quiz ---------- */
+.s-quiz .qnum {
+  font-size: .9em; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--deeper); font-weight: 700; margin-bottom: 1em;
+}
+.s-quiz .qtext {
+  font-family: var(--serif); font-size: 2.1em; line-height: 1.25;
+  max-width: 22em; margin-bottom: 1.3em;
+}
+.s-quiz .opts { list-style: none; max-width: 46em; }
+.s-quiz .opts li {
+  display: flex; gap: .9em; align-items: baseline;
+  font-size: 1.18em; line-height: 1.45;
+  padding: .7em .9em; margin-bottom: .45em;
+  border: 1px solid var(--rule); border-radius: .4em;
+  transition: opacity .4s var(--ease), border-color .4s var(--ease), background .4s var(--ease);
+}
+.s-quiz .opts .k { flex: none; color: var(--deeper); font-weight: 700; }
+.s-quiz.revealed .opts li { opacity: .35; }
+.s-quiz.revealed .opts li.right {
+  opacity: 1;
+  background: var(--cream);
+  border-color: var(--deeper);
+  box-shadow: 0 .5em 1.5em rgba(23,19,18,.2);
+}
+.s-quiz.revealed .opts li.right .k { color: var(--deep); }
+.s-quiz.revealed .opts li.right .chip { border-bottom-color: var(--deep); }
+.s-quiz.revealed .opts li.right .chip::after { color: var(--deep); }
+.s-quiz .why {
+  margin-top: 1.3em; font-size: 1.2em; line-height: 1.5;
+  color: var(--deeper); font-weight: 500; max-width: 34em;
+  opacity: 0; transition: opacity .4s var(--ease) .15s;
+}
+.s-quiz.revealed .why { opacity: 1; }
+.s-quiz .reveal-hint {
+  margin-top: 1.4em; font-size: .9em; color: var(--deeper);
+}
+.s-quiz.revealed .reveal-hint { visibility: hidden; }
+
+/* ---------- End / key terms ---------- */
+.s-end .termgrid {
+  display: flex; flex-wrap: wrap; gap: .7em; margin-top: 1.8em; max-width: 44em;
+}
+
+/* ---------- Word chips ---------- */
+.chip {
+  display: inline-block;
+  border-bottom: 2px dotted var(--deeper);
+  cursor: pointer;
+  color: inherit;
+  padding: 0 .05em;
+  transition: background .18s var(--ease);
+}
+.chip:hover { background: rgba(20,60,95,.16); }
+.chip::after {
+  content: '中';
+  font-size: .58em; vertical-align: super;
+  color: var(--deeper); margin-left: .12em;
+  letter-spacing: 0;
+}
+.s-end .chip {
+  font-size: 1.5em; background: var(--cream);
+  border: 1px solid transparent;
+  border-bottom: 2px dotted var(--deep);
+  border-radius: .4em; padding: .45em .8em;
+}
+
+/* Chip popover */
+#chipcard {
+  position: fixed; z-index: 60;
+  max-width: min(26em, 92vw); padding: 1.2em 1.4em;
+  background: var(--cream); color: var(--ink);
+  border-radius: .6em;
+  box-shadow: 0 1.2em 3.5em rgba(23,19,18,.45);
+  display: none;
+}
+#chipcard.on { display: block; }
+#chipcard .term {
+  font-family: var(--serif); font-size: 1.9em; line-height: 1.1;
+}
+#chipcard .term-zh {
+  font-size: 1.5em; color: var(--deep);
+  margin: .15em 0 .7em; letter-spacing: .08em; font-weight: 600;
+}
+#chipcard .def { font-size: 1.05em; line-height: 1.5; }
+#chipcard .def-zh {
+  font-size: 1em; line-height: 1.6; color: #4a5866;
+  margin-top: .6em; padding-top: .6em; border-top: 1px solid rgba(23,19,18,.15);
+}
+
+/* ---------- Lightbox (zoom) ---------- */
+#lightbox {
+  position: fixed; inset: 0; z-index: 80;
+  background: rgba(12,32,50,.97);
+  display: none; align-items: center; justify-content: center;
+  cursor: zoom-out;
+}
+#lightbox.on { display: flex; }
+#lightbox img { max-width: 94vw; max-height: 94vh; object-fit: contain; }
+#lightbox.soft img { max-width: 55vw; max-height: 70vh; }
+#lightbox .lb-note {
+  position: absolute; bottom: 3vh; left: 0; right: 0;
+  text-align: center; color: rgba(247,240,223,.6); font-size: .9em;
+}
+
+/* ---------- Chrome: progress, nav, menu ---------- */
+#progress {
+  position: fixed; top: 0; left: 0; height: 3px;
+  background: var(--cream); z-index: 50;
+  transition: width .28s var(--ease);
+}
+/* ---------- 上一頁 / 下一頁 ----------
+   Always visible and finger-sized: these get used on a lecture-hall
+   touchscreen, not just with a keyboard. */
+#nav {
+  position: fixed; bottom: 1.6vh; left: 2vw; z-index: 55;
+  display: flex; gap: .6em;
+}
+#nav button {
+  font-family: var(--sans); font-size: 15px;
+  display: flex; align-items: center; gap: .4em;
+  background: var(--cream); color: var(--ink);
+  border: none; border-radius: .4em;
+  padding: .7em 1.1em; cursor: pointer;
+  box-shadow: 0 .3em 1em rgba(23,19,18,.22);
+  transition: background .15s var(--ease), opacity .15s var(--ease), transform .1s var(--ease);
+}
+#nav button:hover:not(:disabled) { background: #fffdf6; transform: translateY(-1px); }
+#nav button:active:not(:disabled) { transform: none; }
+#nav button:disabled { opacity: .3; cursor: default; }
+#nav .ar { font-size: 1.35em; line-height: 1; color: var(--deep); }
+
+@media (max-width: 700px) {
+  #nav button { font-size: 14px; padding: .8em 1em; }
+}
+
+#hud {
+  position: fixed; bottom: 1.6vh; right: 2vw; z-index: 50;
+  display: flex; align-items: center; gap: 1.1em;
+  font-size: 13px; color: var(--deeper);
+  opacity: .75; transition: opacity .2s var(--ease);
+}
+#hud:hover { opacity: 1; }
+#hud button {
+  font: inherit; background: none; border: none; cursor: pointer;
+  color: inherit; padding: .2em .3em;
+}
+#hud button:hover { color: var(--ink); }
+#hud .count { font-variant-numeric: tabular-nums; }
+
+#menu {
+  position: fixed; inset: 0; z-index: 70;
+  background: #1e5a8c;
+  color: var(--cream);
+  display: none; flex-direction: column;
+  padding: 6vh 8vw; overflow-y: auto;
+}
+#menu.on { display: flex; }
+#menu h2 { margin-bottom: 1.2em; color: var(--cream); }
+#menu .sec { margin-bottom: 2em; }
+#menu .sec-head {
+  font-size: 1.35em; color: var(--bg); margin-bottom: .1em; font-weight: 600;
+}
+#menu .sec-zh { font-size: .9em; color: rgba(247,240,223,.5); margin-bottom: .8em; letter-spacing: .14em; }
+#menu .items { display: flex; flex-wrap: wrap; gap: .45em; }
+#menu .items button {
+  font: inherit; font-size: .95em;
+  background: rgba(247,240,223,.1); color: rgba(247,240,223,.8);
+  border: 1px solid transparent; border-radius: .35em;
+  padding: .5em .8em; cursor: pointer; text-align: left;
+  max-width: 22em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+#menu .items button:hover { color: var(--cream); background: rgba(247,240,223,.22); }
+#menu .items button.here { border-color: var(--bg); color: var(--cream); }
+#menu .hint { margin-top: auto; padding-top: 2em; color: rgba(247,240,223,.55); font-size: .95em; }
+
+/* ---------- Notes peek (on the presenting screen) ---------- */
+#peek {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 65;
+  max-height: 45vh; overflow-y: auto;
+  background: var(--cream);
+  border-top: 3px solid var(--deeper);
+  padding: 1.6em 3vw 2em;
+  display: none;
+  box-shadow: 0 -1em 3em rgba(23,19,18,.3);
+}
+#peek.on { display: block; }
+#peek .peek-label {
+  font-size: .78em; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--deep); font-weight: 700; margin-bottom: .8em;
+}
+#peek p { font-size: 1.05em; line-height: 1.55; margin-bottom: .6em; max-width: 52em; color: var(--ink); }
+#peek p.teach { color: var(--deep); font-weight: 500; }
+#peek .chip { border-bottom-color: var(--deep); }
+#peek .chip::after { color: var(--deep); }
+
+/* ---------- Presenter window ---------- */
+body.presenter #hud,
+body.presenter #nav,
+body.presenter #progress,
+body.presenter #stage { display: none; }
+body.presenter {
+  overflow: auto;
+  background: var(--cream);
+  color: var(--ink);
+  padding: 2.5vh 3vw;
+}
+.pv { max-width: 60em; margin: 0 auto; font-size: 16px; }
+.pv .pv-top {
+  display: flex; justify-content: space-between; align-items: baseline;
+  border-bottom: 2px solid var(--bg); padding-bottom: .8em; margin-bottom: 1.4em;
+}
+.pv .pv-top .where { font-size: 1.5em; font-family: var(--serif); }
+.pv .pv-top .clock { color: var(--deep); font-variant-numeric: tabular-nums; }
+.pv h3 { font-size: 1.15em; color: var(--deep); letter-spacing: .12em; text-transform: uppercase; font-weight: 700; margin-bottom: .8em; }
+.pv .notes p {
+  font-size: 1.32em; line-height: 1.6; margin-bottom: .85em;
+}
+.pv .notes p.teach {
+  color: var(--deep); font-size: 1.1em;
+  border-left: 3px solid var(--bg); padding-left: .8em;
+}
+.pv .notes p.ask {
+  color: #8a4b16; font-weight: 600;
+}
+.pv .next {
+  margin-top: 2.5em; padding-top: 1.2em;
+  border-top: 1px solid rgba(23,19,18,.18); color: var(--deep);
+}
+.pv .next .n-title { font-size: 1.3em; color: var(--ink); font-family: var(--serif); }
+.pv .pv-nav { margin-top: 2em; display: flex; gap: .6em; }
+.pv .pv-nav button {
+  font: inherit; font-size: 1em; background: var(--bg); color: var(--ink);
+  border: none; border-radius: .35em; padding: .6em 1.1em; cursor: pointer;
+}
+.pv .pv-nav button:hover { background: var(--deep); color: var(--cream); }
+.pv .chip { border-bottom-color: var(--deep); }
+.pv .chip::after { color: var(--deep); }
+
+/* ---------- Course index ---------- */
+body.course { overflow: auto; }
+.course-page {
+  max-width: 46em; margin: 0 auto; padding: 10vh 6vw 8vh;
+  font-size: 17px;
+}
+.course-kicker {
+  font-size: .82em; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--deeper); font-weight: 700; margin-bottom: 1.4em;
+}
+.course-page h1 { font-size: 3em; line-height: 1.1; }
+.course-sub {
+  font-size: 1.1em; line-height: 1.6; color: var(--ink-dim);
+  margin-top: 1em; max-width: 30em;
+}
+.weeks { list-style: none; margin-top: 3em; }
+.weeks li { margin-bottom: 1.1em; }
+.weeks a, .weeks .card {
+  display: block; text-decoration: none; color: var(--ink);
+  background: var(--cream); border-radius: .6em;
+  padding: 1.5em 1.7em;
+  box-shadow: 0 .5em 1.6em rgba(23,19,18,.16);
+  transition: transform .18s var(--ease), box-shadow .18s var(--ease);
+}
+.weeks a:hover {
+  transform: translateY(-.15em);
+  box-shadow: 0 .9em 2.4em rgba(23,19,18,.26);
+}
+.weeks .wk {
+  display: block; font-size: .78em; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--deep); font-weight: 700;
+}
+.weeks .wk-title {
+  display: block; font-family: var(--serif); font-size: 1.9em;
+  line-height: 1.15; margin: .25em 0 .1em;
+}
+.weeks .wk-q { display: block; font-size: 1.05em; color: var(--deep); }
+.weeks .wk-meta {
+  display: block; font-size: .9em; color: #5a6876; margin-top: .8em;
+}
+/* Weeks not built yet: present, but plainly not ready. */
+.weeks li.soon { margin-bottom: .5em; }
+.weeks li.soon .card {
+  background: transparent;
+  border: 1px dashed rgba(23,19,18,.28);
+  box-shadow: none;
+  padding: .9em 1.7em;
+  color: var(--deeper);
+}
+.weeks li.soon .wk-title {
+  font-size: 1.1em; font-family: var(--sans); margin: 0;
+  display: inline; color: var(--deeper);
+}
+.weeks li.soon .wk { display: inline; margin-right: .8em; }
+.weeks li.soon .wk-q { font-size: .95em; margin-top: .3em; }
+
+.course-foot {
+  margin-top: 3em; font-size: .9em; color: var(--deeper);
+}
+
+/* The vocabulary card at the foot of the course index */
+.vocab-link {
+  display: block; margin-top: 2.2em; text-decoration: none; color: var(--ink);
+  border: 1px solid rgba(23,19,18,.28); border-radius: .6em;
+  padding: 1.2em 1.7em;
+  transition: background .18s var(--ease), border-color .18s var(--ease);
+}
+.vocab-link:hover { background: var(--cream); border-color: transparent; }
+.vl-t { display: block; font-family: var(--serif); font-size: 1.5em; }
+.vl-zh { font-family: var(--sans); font-size: .6em; color: var(--deeper); margin-left: .4em; }
+.vl-m { display: block; font-size: .9em; color: var(--ink-dim); margin-top: .3em; }
+
+/* ---------- Key vocabulary page ---------- */
+/* 139 term cards make this page about 30,000px tall, and past roughly
+   20,000px the browser starts reporting a phantom horizontal overflow —
+   every element still measures inside the viewport, but the page drifts
+   sideways on a phone. Nothing here is ever wider than its column, so
+   clamping the axis clips nothing. */
+body.vocab { overflow-x: hidden; overflow-y: auto; }
+.vocab-page { max-width: 54em; }
+.course-kicker a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--rule); }
+.course-kicker a:hover { border-bottom-color: currentColor; }
+.h1-zh {
+  font-family: var(--sans); font-size: .34em; letter-spacing: .1em;
+  color: var(--deeper); vertical-align: .9em; margin-left: .5em; font-weight: 400;
+}
+
+.v-tools { margin-top: 2.4em; }
+#q {
+  width: 100%; font: inherit; font-size: 1.05em;
+  padding: .85em 1.1em; border: none; border-radius: .5em;
+  background: var(--cream); color: var(--ink);
+  box-shadow: 0 .4em 1.2em rgba(23,19,18,.14);
+  -webkit-appearance: none;
+}
+#q::placeholder { color: #8a98a6; }
+#q:focus { outline: 2px solid var(--deeper); outline-offset: 2px; }
+.v-count {
+  margin-top: .7em; font-size: .85em; letter-spacing: .04em; color: var(--deeper);
+}
+
+/* The unit numbers, as a row of stops across the top. */
+.v-jump { margin-top: 1.6em; display: flex; flex-wrap: wrap; gap: .4em; }
+.v-jump a {
+  display: block; min-width: 2.2em; text-align: center;
+  padding: .4em 0; border-radius: .35em;
+  background: rgba(247,240,223,.28); color: var(--ink);
+  text-decoration: none; font-size: .9em; font-weight: 700;
+}
+.v-jump a:hover { background: var(--cream); }
+
+.v-unit { margin-top: 3.4em; scroll-margin-top: 1.5em; }
+.v-unit h2 { font-weight: 400; line-height: 1.2; }
+.v-n {
+  display: block; font-size: .72em; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--deeper); font-weight: 700;
+  font-family: var(--sans);
+}
+.v-t { display: block; font-family: var(--serif); font-size: 1.55em; margin: .12em 0; }
+.v-zh { display: block; font-size: .78em; color: var(--ink-dim); }
+.v-deck {
+  display: inline-block; margin-top: .7em; font-size: .88em;
+  color: var(--deeper); text-decoration: none;
+  border-bottom: 1px solid var(--rule);
+}
+.v-deck:hover { color: var(--ink); border-bottom-color: currentColor; }
+
+.v-unit dl { margin-top: 1.6em; }
+.v-term {
+  background: var(--cream); border-radius: .55em;
+  padding: 1.2em 1.5em; margin-bottom: .8em;
+  box-shadow: 0 .35em 1.1em rgba(23,19,18,.13);
+}
+.v-term dt {
+  font-family: var(--serif); font-size: 1.25em; line-height: 1.25;
+}
+.t-zh {
+  font-family: var(--sans); font-size: .68em; color: var(--deep);
+  margin-left: .7em; white-space: nowrap;
+}
+.v-term dd { margin-top: .55em; font-size: .95em; line-height: 1.6; }
+.d-en { color: var(--ink); }
+.d-zh { color: #4a5866; }
+
+.v-empty {
+  margin-top: 3em; font-size: 1.1em; color: var(--cream); opacity: .8;
+}
+
+@media (max-width: 700px) {
+  .v-term { padding: 1em 1.15em; }
+  .t-zh { display: block; margin-left: 0; margin-top: .2em; white-space: normal; }
+  /* Beside a wrapping h1 this span sat past the right edge and gave the
+     whole page a horizontal scroll. On its own line it cannot. */
+  .h1-zh { display: block; margin-left: 0; vertical-align: baseline; font-size: .42em; }
+}
+
+/* The "units" link in a deck’s HUD */
+#hud a { color: inherit; text-decoration: none; }
+#hud a:hover { color: var(--ink); }
+
+/* ---------- Keyboard focus ----------
+   Nothing showed focus before, so tabbing through a deck was invisible.
+   Dark ring on the green ground; cream inside the dark menu. */
+:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+#menu :focus-visible, .s-end .chip:focus-visible { outline-color: var(--cream); }
+
+/* ---------- Smaller screens / preview ---------- */
+/* Narrow AND tall — a phone or tablet held upright. Stacking a picture
+   above its text needs vertical room; doing it on a phone in landscape
+   is what pushed eight video slides off the bottom of the screen. */
+@media (max-width: 900px) and (min-height: 520px) {
+  .s-artwork { flex-direction: column; gap: 2vh; }
+  .s-gallery { flex-direction: column; gap: 2vh; }
+  .s-gallery .gal { height: 46vh; }
+  .s-artwork .art { height: 44vh; }
+  .s-artwork .side { max-width: none; }
+  .s-twocol .cols, .s-activity, .s-rank, .s-video { flex-direction: column; gap: 2vh; }
+  .s-flow .stages, .s-timeline .stops, .match-cols, .vote-opts { flex-direction: column; }
+  .s-match .match-card { font-size: .95em; }
+  .s-flow .stage-arrow { align-self: flex-start; transform: rotate(90deg); }
+  .s-grid .cells { grid-template-columns: 1fr; }
+  .rank-card { width: 7.5em; }
+  .rank-card img, .rank-glyph { height: 5em; }
+  .compare-wrap { flex-direction: column; }
+  .compare-pane { height: 32vh; }
+}
+
+@media print { #hud, #nav, #menu, #peek, #progress { display: none !important; } }
+
+/* ---------- Phone layout ----------
+   These must come last. An earlier attempt sat above the #nav and #hud
+   rules and lost to them: a media query adds no specificity, so only
+   source order decides.
+
+   The problem being fixed: the nav buttons sat on top of the HUD and
+   covered units / vocab / menu completely — on a phone none of the
+   three could be tapped at all. They get a row each now, and a 44px
+   touch target. */
+@media (max-width: 700px) {
+  #nav {
+    left: 0; right: 0; bottom: 1.2vh;
+    justify-content: center;
+  }
+  #nav button { font-size: 14px; padding: .85em 1.1em; min-height: 44px; }
+  #hud {
+    left: 0; right: 0; bottom: calc(1.2vh + 58px);
+    justify-content: center; gap: .9em;
+    font-size: 14px; opacity: 1;
+  }
+  #hud button, #hud a { padding: .6em .45em; }
+}
+
+/* ---------- Reduced motion ----------
+   macOS and iOS both have a system switch for this, and a deck that
+   cross-fades 56 slides is exactly what it is meant to catch. Slides
+   and build steps still change — they just arrive instead of moving. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .step { transform: none; }
+}
+
+/* Anchor jumps on the vocabulary page glide instead of teleporting;
+   the block above turns this off when the system asks. */
+@media (prefers-reduced-motion: no-preference) {
+  body.vocab { scroll-behavior: smooth; }
+}
+
+/* ---------- Touch devices, any size ----------
+   The HUD links were sized for a mouse: 15px tall. That is fine for a
+   cursor and wrong for a finger, and an iPad is 768 or 1024 wide, so a
+   width breakpoint never catches it. Ask about the pointer instead. */
+@media (pointer: coarse) {
+  #hud { font-size: 14px; opacity: 1; }
+  #hud button, #hud a { padding: .8em .5em; }
+  #nav button { min-height: 44px; }
+  /* The vocabulary page's unit numbers were 30px — same problem. */
+  .v-jump a { min-width: 44px; padding: .9em 0; }
+}
+
+/* ---------- Short viewports: a phone on its side ----------
+   Roughly 375pt of height. Everything has to give a little: the slide
+   padding, the chrome, and the type scale (handled in fit()). The last
+   rule is a safety net — if a slide still will not fit, it scrolls
+   rather than silently cutting its own bottom off. */
+@media (max-height: 520px) {
+  .slide { padding: 3vh 5vw 7vh; overflow-y: auto; }
+  #nav { bottom: .8vh; left: 1.5vw; }
+  #nav button { font-size: 13px; padding: .5em .8em; min-height: 36px; }
+  #hud {
+    bottom: .8vh; right: 1.5vw;
+    font-size: 12px; gap: .8em; opacity: 1;
+  }
+  #hud button, #hud a { padding: .45em .35em; }
+  .s-video .vid, .s-artwork .art { height: 62vh; }
+  .s-gallery .gal { height: 62vh; }
+  .compare-pane { height: 58vh; }
+}
+
+/* Portrait phone: the HUD links were 33px tall, under Apple's 44pt
+   minimum. The row has the space, so take it. */
+@media (max-width: 700px) {
+  #hud button, #hud a { padding: .95em .5em; }
+  #hud { bottom: calc(1.2vh + 68px); }
+}
+
+
+/* =================================================================
+   Added for Aaron's decks
+   ================================================================= */
+
+/* ---------- Fill-in slide: the handout's gaps ---------- */
+.fill-lines { margin-top: 1.4em; max-width: 40em; }
+.fill-line { font-size: 1.7em; line-height: 1.55; margin-bottom: .7em; }
+.blank.step { opacity: 1; transform: none; }
+.blank {
+  display: inline-block; min-width: 3.4em; text-align: center;
+  background: rgba(247,240,223,.38); border-radius: .3em;
+  padding: 0 .35em; margin: 0 .1em;
+  border-bottom: 2px solid var(--deep);
+}
+.blank .bv {
+  opacity: 0; font-weight: 700; color: var(--deeper);
+  transition: opacity .35s var(--ease);
+}
+.blank.shown { background: var(--cream); }
+.blank.shown .bv { opacity: 1; }
+
+/* ---------- Lesson map: today's lesson ---------- */
+.s-flow .stage-body .here {
+  display: block; background: var(--deep); color: var(--cream);
+  border-radius: .3em; padding: .15em .45em; margin: -.15em -.45em .2em;
+  font-weight: 600;
+}
+.s-flow .stage-body .lesson { display: block; margin-bottom: .35em; }
+
+/* ---------- The two diagrams ---------- */
+.s-myelin, .s-network {
+  flex-direction: row; align-items: center; gap: 4vw; padding: 4vh 5vw 9vh;
+}
+.demo {
+  flex: 1 1 60%; background: var(--cream); border-radius: .6em;
+  padding: 1.2em 1.4em; box-shadow: 0 .8em 2em rgba(23,19,18,.2);
+  cursor: default;
+}
+.demo svg { width: 100%; height: auto; display: block; }
+.s-myelin .side, .s-network .side { flex: 1 1 36%; max-width: 24em; }
+.s-myelin h2, .s-network h2 { font-size: 2em; }
+.s-myelin .cap, .s-network .cap {
+  font-size: 1.02em; color: var(--deeper); line-height: 1.45; margin: .4em 0 1.2em;
+}
+.s-myelin .points, .s-network .points { list-style: none; }
+.s-myelin .points li, .s-network .points li {
+  font-size: 1.12em; line-height: 1.5; margin-bottom: .8em;
+  padding-left: 1em; border-left: 2px solid var(--rule);
+}
+.demo-btn {
+  font: inherit; font-size: 1em; font-weight: 600; cursor: pointer;
+  background: var(--deep); color: var(--cream); border: 0;
+  border-radius: 2em; padding: .55em 1.3em; margin-top: .8em;
+}
+.demo-btn:hover { background: var(--deeper); }
+.demo-btn.quiet {
+  background: transparent; color: var(--deep); border: 1px solid var(--rule);
+  font-weight: 500;
+}
+
+/* Myelin: the bare fibre crawls; the wrapped one jumps gap to gap. */
+.my-lane { font-size: 20px; font-weight: 700; fill: var(--deep); }
+.my-body { fill: #d9c9a6; stroke: var(--ink); stroke-width: 2; }
+.my-den, .my-axon, .my-end { stroke: var(--ink); stroke-width: 4; fill: none; stroke-linecap: round; }
+.my-den { stroke-width: 3; }
+.my-seg { fill: #f3d58a; stroke: #8a6a1c; stroke-width: 2; }
+.my-labels text { font-size: 15px; fill: #44505c; }
+.my-labels .my-tag { fill: #8a6a1c; font-weight: 700; }
+.my-dot { fill: #e0533d; opacity: 0; }
+.my-demo.go .my-dot.slow { animation: crawl 3.2s linear forwards; }
+.my-demo.go .my-dot.fast { animation: hop .5s steps(7, end) forwards; }
+@keyframes crawl {
+  0% { opacity: 1; transform: translateX(0); }
+  96% { opacity: 1; }
+  100% { opacity: 1; transform: translateX(488px); }
+}
+@keyframes hop {
+  0% { opacity: 1; transform: translateX(0); }
+  100% { opacity: 1; transform: translateX(488px); }
+}
+
+/* Network: each rep thickens the one road and speeds the pulse. */
+.net-edge { stroke: #b7c3cc; stroke-width: 2; }
+.net-node { fill: #9fb3c2; }
+.net-node.on-road { fill: var(--deep); }
+.net-road {
+  stroke: var(--deep); stroke-linecap: round;
+  stroke-width: calc(3px + var(--reps, 0) * 1.3px);
+  transition: stroke-width .4s var(--ease), stroke .4s var(--ease);
+}
+.net-demo.habit .net-road { stroke: #d9a521; }
+.net-demo.pulse .net-road {
+  animation: fire calc(1.1s - var(--reps, 0) * .09s) var(--ease)
+             calc(var(--k) * (0.32s - var(--reps, 0) * .028s)) 1;
+}
+@keyframes fire { 50% { stroke: #e0533d; } }
+.net-bar { display: flex; align-items: center; flex-wrap: wrap; gap: .4em 1em; margin-top: .4em; }
+.net-bar .demo-btn { margin-top: 0; }
+.net-skill { flex: 1 1 100%; font-size: 1.05em; color: var(--deeper); }
+.net-reps { font-size: 1.1em; }
+.net-reps b { font-size: 1.3em; color: var(--deeper); }
+.net-habit {
+  margin-top: .6em; font-size: 1.2em; font-weight: 700; color: #8a6a1c;
+  opacity: 0; transition: opacity .4s var(--ease);
+}
+.net-demo.habit .net-habit { opacity: 1; }
+
+@media (max-width: 900px) and (min-height: 520px) {
+  .s-myelin, .s-network { flex-direction: column; gap: 2vh; }
+  .s-myelin .side, .s-network .side { max-width: none; }
+  .s-myelin .demo, .s-network .demo { flex: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .my-demo.go .my-dot.slow, .my-demo.go .my-dot.fast { animation-duration: .01s; }
+  .net-demo.pulse .net-road { animation: none; }
+}
+
+/* ---------- Course index: two versions per lesson ---------- */
+.weeks .ver { display: flex; gap: .7em; flex-wrap: wrap; margin-top: 1em; }
+.weeks .ver a {
+  display: inline-block; padding: .6em 1.1em; border-radius: 2em;
+  background: var(--deep); color: var(--cream); box-shadow: none;
+  font-weight: 600; font-size: .98em;
+}
+.weeks .ver a:hover { background: var(--deeper); transform: none; box-shadow: none; }
+.weeks .ver a span { font-weight: 400; opacity: .8; margin-left: .4em; }
+.weeks .stage-h {
+  font-size: .8em; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--deeper); font-weight: 700; margin: 2.2em 0 .8em;
+}

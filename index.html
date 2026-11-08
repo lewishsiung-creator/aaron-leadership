@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#6fa9d4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Leadership">
+<title>Performance-Driven Leadership — workshop decks</title>
+<meta name="description" content="Interactive workshop decks for a nine-lesson leadership course. English at CEFR A2, in two versions: working professionals and athletes.">
+<link rel="stylesheet" href="shared/style.css">
+</head>
+<body class="course">
+
+<main class="course-page">
+  <header>
+    <div class="course-kicker">Workshop decks · <span lang="zh-Hant">績效導向・領導力訓練</span></div>
+    <h1>Performance-Driven Leadership</h1>
+    <p class="course-sub">
+      Nine lessons in three steps. English at CEFR A2, with Chinese on the key words.
+      Each lesson comes in two versions — for <b>working professionals</b> and for <b>athletes</b>.
+      Open one, then press <b>P</b> for the presenter window and <b>M</b> to jump to a section.
+    </p>
+  </header>
+
+  <ul class="weeks" id="lessons"></ul>
+
+  <footer class="course-foot">Aaron Kao · leadership coach</footer>
+</main>
+
+<script src="lessons.js"></script>
+<script>
+document.getElementById('lessons').innerHTML = STAGES.map((st, si) =>
+  `<li class="stage-h">${si + 1} · ${st.en} <span lang="zh-Hant">${st.zh}</span></li>` +
+  LESSONS.filter(l => l.stage === si).map(l => {
+    const head = `
+      <span class="wk">Lesson ${l.n} · <span lang="zh-Hant">${l.zh}</span></span>
+      <span class="wk-title">${l.title}</span>`;
+    if (!l.dir) return `<li class="soon"><span class="card">${head}</span></li>`;
+    return `<li><span class="card">${head}
+        ${l.q ? `<span class="wk-q">${l.q}</span>` : ''}
+        ${l.meta ? `<span class="wk-meta">${l.meta}</span>` : ''}
+        <span class="ver">
+          <a href="${l.dir}/work/">For professionals<span lang="zh-Hant">職場專業人士</span></a>
+          <a href="${l.dir}/sport/">For athletes<span lang="zh-Hant">運動員</span></a>
+        </span></span></li>`;
+  }).join('')).join('');
+</script>
+</body>
+</html>
