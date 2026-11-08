@@ -14,9 +14,13 @@
 
 <main class="course-page">
   <header>
-    <div class="course-kicker"><span lang="zh-Hant">極限人生企管顧問</span> · Workshop decks</div>
-    <h1>Performance-Driven Leadership</h1>
-    <p class="course-sub">
+    <div class="course-top">
+      <div class="course-kicker"><span lang="zh-Hant">極限人生企管顧問</span> · <span data-zh="工作坊簡報">Workshop decks</span></div>
+      <button id="btn-lang" class="lang-btn" title="中文 / English" data-zh="EN">中文</button>
+    </div>
+    <h1 data-zh="績效導向・領導力訓練">Performance-Driven Leadership</h1>
+    <div class="course-alt" data-zh="Performance-Driven Leadership" lang="zh-Hant">績效導向・領導力訓練</div>
+    <p class="course-sub" data-zh="九堂課，分成三個階段。每一課都有兩個版本：<b>職場專業人士</b>版和<b>運動員</b>版，各有英文和中文模式。打開一課後，按 <b>P</b> 開講者視窗，按 <b>M</b> 跳到任一段，按 <b>L</b> 切換中英文。">
       Nine lessons in three steps. English at CEFR A2, with Chinese on the key words.
       Each lesson comes in two versions — for <b>working professionals</b> and for <b>athletes</b>.
       Open one, then press <b>P</b> for the presenter window and <b>M</b> to jump to a section.
@@ -28,23 +32,28 @@
   <footer class="course-foot">Aaron Kao · <span lang="zh-Hant">極限人生企管顧問</span> · Inspire for Better</footer>
 </main>
 
+<script src="shared/lang.js"></script>
 <script src="lessons.js"></script>
 <script>
+const Z = window.ZHMODE;
+const one = (en, zh) => Z ? zh : en;
 document.getElementById('lessons').innerHTML = STAGES.map((st, si) =>
-  `<li class="stage-h">${si + 1} · ${st.en} <span lang="zh-Hant">${st.zh}</span></li>` +
+  `<li class="stage-h">${si + 1} · ${one(st.en, st.zh)} <span lang="${Z ? 'en' : 'zh-Hant'}">${one(st.zh, st.en)}</span></li>` +
   LESSONS.filter(l => l.stage === si).map(l => {
     const head = `
-      <span class="wk">Lesson ${l.n} · <span lang="zh-Hant">${l.zh}</span></span>
-      <span class="wk-title">${l.title}</span>`;
+      <span class="wk">${one('Lesson ' + l.n, '第 ' + l.n + ' 課')} · <span lang="${Z ? 'en' : 'zh-Hant'}">${one(l.zh, l.title)}</span></span>
+      <span class="wk-title">${one(l.title, l.zh)}</span>`;
     if (!l.dir) return `<li class="soon"><span class="card">${head}</span></li>`;
     return `<li><span class="card">${head}
-        ${l.q ? `<span class="wk-q">${l.q}</span>` : ''}
-        ${l.meta ? `<span class="wk-meta">${l.meta}</span>` : ''}
+        ${l.q ? `<span class="wk-q">${one(l.q, l.qZh || l.q)}</span>` : ''}
+        ${l.meta ? `<span class="wk-meta">${one(l.meta, l.metaZh || l.meta)}</span>` : ''}
         <span class="ver">
-          <a href="${l.dir}/work/">For professionals<span lang="zh-Hant">職場專業人士</span></a>
-          <a href="${l.dir}/sport/">For athletes<span lang="zh-Hant">運動員</span></a>
+          <a href="${l.dir}/work/">${one('For professionals', '職場專業人士')}<span lang="${Z ? 'en' : 'zh-Hant'}">${one('職場專業人士', 'For professionals')}</span></a>
+          <a href="${l.dir}/sport/">${one('For athletes', '運動員')}<span lang="${Z ? 'en' : 'zh-Hant'}">${one('運動員', 'For athletes')}</span></a>
         </span></span></li>`;
   }).join('')).join('');
+applyLang();
+document.getElementById('btn-lang').onclick = () => switchLang();
 </script>
 </body>
 </html>

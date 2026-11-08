@@ -18,9 +18,11 @@ Every lesson comes in **two versions** from one source file:
 ```
 index.html        the course index — cards come from lessons.js
 lessons.js        nine lessons in three stages; `dir: null` = not built yet
-shared/           deck.js and style.css — every lesson uses these
+shared/           deck.js, style.css, the two themes, lang.js
+tools/strings.js  lists a lesson's strings / those still missing Chinese
 lesson01/
   content.js      the lesson, both versions
+  content.zh.js   its Chinese, for 中文 mode
   work/index.html sets window.AUDIENCE = 'work', loads ../content.js
   sport/index.html sets window.AUDIENCE = 'sport'
 ```
@@ -47,6 +49,30 @@ through variables (`--card`, `--card-dim`, `--on-accent`, `--menu-bg`,
 `--gold`), so a theme mostly swaps variables rather than rules. Themes must
 not change layout: the phone and touchscreen rules at the end of
 `style.css` depend on it.
+
+## English and 中文 modes
+
+Every page has a **中文 / EN** button (key **L** in a deck). The choice is
+remembered in that browser; a link can force it with `?lang=zh` or
+`?lang=en`. Switching in a deck reloads on the same slide, and an open
+presenter window follows.
+
+- `shared/lang.js` decides the mode and swaps any `[data-zh]` element.
+- `lessonNN/content.zh.js` holds the Chinese as **[exact English, Chinese]**
+  pairs. In Chinese mode the engine looks every slide string up by its
+  English; anything missing stays English. After editing `content.js`, run
+  `node tools/strings.js lessonNN --missing` to list what needs Chinese.
+- Word chips flip: in Chinese mode a chip reads in Chinese, is marked **EN**,
+  and its card leads with the Chinese and teaches the English. A short
+  inline form can be set with `zhChip` in the GLOSSARY.
+- The small line under a title swaps too: Chinese under English titles,
+  English under Chinese ones.
+- The Chinese is written for adults (not simplified to A2) and goes back to
+  the handout's own wording where there is one — with the same corrections
+  as the English (100×, neurons connect).
+- The engine's own labels (ASK, Question 1 of 4, Reset…) are in the `UI`
+  table at the top of `deck.js`. The `vote`, `match` and `rank` slide types
+  are not used yet and their buttons are still English only.
 
 ## One file, two versions
 

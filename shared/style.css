@@ -1412,3 +1412,18 @@ body.course .weeks a, body.course .weeks .card {
   box-shadow: 0 .1em .4em rgba(23,19,18,.06), 0 0 0 1px rgba(23,19,18,.05);
 }
 body.course .weeks li.soon .card { background: transparent; box-shadow: none; }
+
+/* ---------- English / 中文 ---------- */
+.course-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1em; }
+.lang-btn {
+  font: inherit; font-size: .9em; font-weight: 600; cursor: pointer;
+  background: var(--deep); color: var(--on-accent); border: 0;
+  border-radius: 2em; padding: .45em 1.1em; flex: none;
+}
+.lang-btn:hover { background: var(--deeper); }
+.course-alt { font-size: 1.15em; color: var(--deeper); letter-spacing: .12em; margin-top: .4em; }
+/* In Chinese mode a word chip is marked EN: tap it for the English. */
+html[lang="zh-Hant"] .chip::after { content: 'EN'; font-size: .45em; letter-spacing: .02em; }
+/* The HUD gains a language button; a phone has no room for the presenter
+   link, and no second screen to put it on. */
+@media (max-width: 700px) { #btn-presenter { display: none; } }

@@ -20,6 +20,63 @@
      lesson never drive each other's presenter window. */
   const CH = 'aaron-deck:' + location.pathname;
 
+  /* ---------- English / 中文 ----------
+     lang.js decides the mode. In Chinese mode every slide string is looked
+     up in window.ZH (the lesson's content.zh.js) by its exact English text;
+     anything not found stays English, so a gap shows rather than breaks.
+     Run tools/strings.js <lesson> --missing to list the gaps. */
+  const ZHMODE = !!window.ZHMODE;
+  const ALT = ZHMODE ? 'en' : 'zh-Hant';   /* lang of the small second-language line */
+  const UI = ZHMODE ? {
+    simple: '簡單來說', ask: '問', watch: '注意看',
+    question: (n, of) => `第 ${n} 題 · 共 ${of} 題`, reveal: '大家回答後再點一下',
+    zoom: '點圖片放大', zoomAny: '點任一張圖片放大',
+    yt: '需要網路 · <a href="https://www.youtube.com/watch?v=ID" target="_blank" rel="noopener">在 YouTube 開啟</a>',
+    local: '影片在網站上，不需要網路',
+    send: '送出訊號', practice: '練習一次', reset: '重來', reps: '次數',
+    habit: '變成習慣了！', start: '開始', jump: '跳到',
+    menuHint: 'Backspace 回到剛才那一頁 · N = 在這個螢幕看備註 · P = 講者視窗',
+    peek: n => `備註 · 第 ${n} 頁 · 按 N 收起`,
+    say: '要說的話', nextUp: '下一頁', end: '最後一頁', back: '← 上一頁', fwd: '下一頁 →',
+    step: (a, b) => `步驟 ${a}/${b}`, mins: m => `已經 ${m} 分鐘`
+  } : {
+    simple: 'In simple words', ask: 'ASK', watch: 'WATCH FOR',
+    question: (n, of) => `Question ${n} of ${of}`, reveal: 'Click when the class has answered',
+    zoom: 'Click the picture to zoom', zoomAny: 'Click any picture to zoom',
+    yt: 'Needs internet · <a href="https://www.youtube.com/watch?v=ID" target="_blank" rel="noopener">open on YouTube</a>',
+    local: 'Plays from this site — no internet needed',
+    send: 'Send a signal <span lang="zh-Hant">送出訊號</span>',
+    practice: 'Practice once <span lang="zh-Hant">練習一次</span>', reset: 'Reset', reps: 'Reps',
+    habit: 'Now it is a habit!', start: 'Start', jump: 'Jump to',
+    menuHint: 'Backspace takes you back to where you jumped from. · N = notes on this screen · P = presenter window',
+    peek: n => `Notes · slide ${n} · press N to hide`,
+    say: 'Say this', nextUp: 'Next up', end: 'End of deck', back: '← Back', fwd: 'Next →',
+    step: (a, b) => `step ${a}/${b}`, mins: m => `${m} min elapsed`
+  };
+
+  if (ZHMODE) {
+    const ZH = window.ZH || {};
+    const KEEP = new Set(['type', 'yt', 'dm', 'poster', 'src', 'terms', 'answer', 'n', 'of',
+                          'minutes', 'only', 'oneClick', 'sec', 'zh']);
+    const tr = v => {
+      if (typeof v === 'string') return Object.prototype.hasOwnProperty.call(ZH, v) ? ZH[v] : v;
+      if (Array.isArray(v)) return v.map(tr);
+      if (v && typeof v === 'object') {
+        const o = {};
+        for (const k in v) o[k] = KEEP.has(k) ? v[k] : tr(v[k]);
+        return o;
+      }
+      return v;
+    };
+    SLIDES.forEach((s, i) => {
+      const t = tr(s);
+      /* The small line under a title was the Chinese; now it is the English. */
+      if (s.zh && s.title) t.zh = String(s.title).replace(/\{\{(\w+)\}\}/g, (m, k) => GLOSSARY[k] ? GLOSSARY[k].en : k);
+      SLIDES[i] = t;
+    });
+    SECTIONS.forEach(sec => { const en = sec.title; sec.title = sec.zh || en; sec.zh = en; });
+  }
+
   /* ---------- helpers ---------- */
   const el = (tag, cls, html) => {
     const n = document.createElement(tag);
@@ -35,14 +92,18 @@
     return String(s).replace(/\{\{(\w+)\}\}/g, (m, key) => {
       const g = GLOSSARY[key];
       if (!g) return m.replace(/[{}]/g, '');
-      return `<span class="chip" data-term="${key}" role="button" tabindex="0">${g.en}</span>`;
+      return `<span class="chip" data-term="${key}" role="button" tabindex="0">${chipLabel(g)}</span>`;
     });
   }
+  /* In Chinese mode a chip reads in Chinese, and its card leads with the
+     Chinese and teaches the English — the other way round from English mode. */
+  function chipLabel(g) { return ZHMODE ? (g.zhChip || g.zh) : g.en; }
+
   /* Same, but strips the markup — for the presenter window and menu. */
   function plainText(s) {
     if (s == null) return '';
     return String(s)
-      .replace(/\{\{(\w+)\}\}/g, (m, k) => (GLOSSARY[k] ? GLOSSARY[k].en : k))
+      .replace(/\{\{(\w+)\}\}/g, (m, k) => (GLOSSARY[k] ? chipLabel(GLOSSARY[k]) : k))
       .replace(/<[^>]+>/g, '');
   }
 
@@ -97,7 +158,7 @@
   /* ---------- slide titles, for the menu and presenter ---------- */
   function titleOf(s) {
     if (s.type === 'word') return `“${s.word}”`;
-    if (s.type === 'quiz') return `Q${s.n}`;
+    if (s.type === 'quiz') return ZHMODE ? `第 ${s.n} 題` : `Q${s.n}`;
     return plainText(s.title || s.q || '—');
   }
 
@@ -125,15 +186,15 @@
       root.innerHTML = `
         <div class="pv-top">
           <div class="where">${idx + 1} / ${SLIDES.length} · ${titleOf(s)}</div>
-          <div class="clock">step ${step}/${stepsFor(s)} · ${mins} min elapsed</div>
+          <div class="clock">${UI.step(step, stepsFor(s))} · ${UI.mins(mins)}</div>
         </div>
-        <h3>Say this</h3>
+        <h3>${UI.say}</h3>
         <div class="notes">${notes || '<p>—</p>'}</div>
-        <div class="next"><div>Next up</div>
-          <div class="n-title">${nx ? titleOf(nx) : 'End of deck'}</div></div>
+        <div class="next"><div>${UI.nextUp}</div>
+          <div class="n-title">${nx ? titleOf(nx) : UI.end}</div></div>
         <div class="pv-nav">
-          <button data-go="prev">← Back</button>
-          <button data-go="next">Next →</button>
+          <button data-go="prev">${UI.back}</button>
+          <button data-go="next">${UI.fwd}</button>
         </div>`;
       root.querySelectorAll('[data-go]').forEach(b => {
         b.onclick = () => post({ nav: b.dataset.go });
@@ -204,7 +265,7 @@
 
   function askBlock(text, stepped) {
     return `<div class="ask ${stepped ? 'step' : ''}" ${stepped ? 'data-step="ask"' : ''}>
-      <span class="tag">ASK</span><span class="q">${chips(text)}</span></div>`;
+      <span class="tag">${UI.ask}</span><span class="q">${chips(text)}</span></div>`;
   }
 
   function render(s, i) {
@@ -226,7 +287,7 @@
       case 'bullets':
         return `${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ''}
           <h2>${chips(s.title)}</h2>
-          ${s.zh ? `<div class="zh-title" lang="zh-Hant">${s.zh}</div>` : ''}
+          ${s.zh ? `<div class="zh-title" lang="${ALT}">${s.zh}</div>` : ''}
           <ul>${s.items.map((it, k) => `
             <li class="step" data-step="${k}">
               <div class="head">${chips(it.head)}</div>
@@ -239,12 +300,12 @@
       case 'quote': {
         const body = `${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ''}
           <h2>${chips(s.title)}</h2>
-          ${s.zh ? `<div class="zh-title" lang="zh-Hant">${s.zh}</div>` : ''}
+          ${s.zh ? `<div class="zh-title" lang="${ALT}">${s.zh}</div>` : ''}
           ${s.lead ? `<div class="lead">${chips(s.lead)}</div>` : ''}
           <blockquote>${chips(s.quote)}</blockquote>
           <cite>${s.cite}</cite>
           ${s.plain ? `<div class="plain step" data-step="plain">
-            <div class="plain-label">In simple words</div>
+            <div class="plain-label">${UI.simple}</div>
             ${s.plain.map(p => `<p>${chips(p)}</p>`).join('')}</div>` : ''}
           ${s.ask ? askBlock(s.ask, true) : ''}`;
         if (!s.src) return body;
@@ -274,7 +335,7 @@
             ${s.ask ? askBlock(s.ask, false) : ''}
             <ul class="points">${(s.points || []).map((p, k) =>
               `<li class="step" data-step="${k}">${chips(p)}</li>`).join('')}</ul>
-            <div class="zoom-hint">Click the picture to zoom${s.smallSource ? ' (small source — stays modest on purpose)' : ''}</div>
+            <div class="zoom-hint">${UI.zoom}${s.smallSource ? ' (small source — stays modest on purpose)' : ''}</div>
           </div>`;
 
       /* Same two-column shape as an artwork slide, but the picture side
@@ -286,12 +347,12 @@
               im.cap ? `<figcaption>${chips(im.cap)}</figcaption>` : ''}</figure>`).join('')}</div>
           <div class="side">
             <h2>${chips(s.title)}</h2>
-            ${s.zh ? `<div class="zh-title" lang="zh-Hant">${s.zh}</div>` : ''}
+            ${s.zh ? `<div class="zh-title" lang="${ALT}">${s.zh}</div>` : ''}
             <div class="cap">${s.caption}</div>
             ${s.ask ? askBlock(s.ask, false) : ''}
             <ul class="points">${(s.points || []).map((p, k) =>
               `<li class="step" data-step="${k}">${chips(p)}</li>`).join('')}</ul>
-            <div class="zoom-hint">Click any picture to zoom</div>
+            <div class="zoom-hint">${UI.zoomAny}</div>
           </div>`;
 
       case 'twocol':
@@ -310,7 +371,7 @@
 
       case 'break':
         return `<h2>${chips(s.title)}</h2>
-          ${s.zh ? `<div class="zh-title" lang="zh-Hant">${s.zh}</div>` : ''}
+          ${s.zh ? `<div class="zh-title" lang="${ALT}">${s.zh}</div>` : ''}
           <div class="chain-label">${s.chainLabel}</div>
           <div class="chain">${s.chain.map((c, k) =>
             `<span>${c}</span>${k < s.chain.length - 1 ? '<i>→</i>' : ''}`).join('')}</div>
@@ -322,15 +383,15 @@
       case 'activity':
         return `<div class="left">
             <h2>${chips(s.title)}</h2>
-            ${s.zh ? `<div class="zh-title" lang="zh-Hant">${s.zh}</div>` : ''}
+            ${s.zh ? `<div class="zh-title" lang="${ALT}">${s.zh}</div>` : ''}
             <ul>${s.instructions.map(x => `<li>${chips(x)}</li>`).join('')}</ul>
             ${s.questions ? `<ul class="q-list">${s.questions.map((q, k) =>
               `<li class="step" data-step="${k}">${chips(q)}</li>`).join('')}</ul>` : ''}
             ${s.ask ? askBlock(s.ask, false) : ''}
             <div class="timer" data-mins="${s.minutes}">
               <div class="clock">${String(s.minutes).padStart(2, '0')}:00</div>
-              <button data-timer="start">Start</button>
-              <button data-timer="reset">Reset</button>
+              <button data-timer="start">${UI.start}</button>
+              <button data-timer="reset">${UI.reset}</button>
             </div>
           </div>
           <div class="right">${s.timeline ? `<ul class="tl">${s.timeline.map(([y, m]) =>
@@ -345,16 +406,16 @@
                  ${s.poster ? `style="background-image:url(${s.poster})"` : ''}>
               <button class="vid-play" aria-label="Play"><span>▶</span></button>
             </div>
-            ${s.watchFor ? `<div class="vid-watch"><span class="tag">WATCH FOR</span>${chips(s.watchFor)}</div>` : ''}
+            ${s.watchFor ? `<div class="vid-watch"><span class="tag">${UI.watch}</span>${chips(s.watchFor)}</div>` : ''}
           </div>
           <div class="side">
             <h2>${chips(s.title)}</h2>
             <div class="cap">${s.caption}</div>
             <ul class="points">${(s.points || []).map((p, k) =>
               `<li class="step" data-step="${k}">${chips(p)}</li>`).join('')}</ul>
-            ${s.yt ? `<div class="zoom-hint">Needs internet · <a href="https://www.youtube.com/watch?v=${s.yt}" target="_blank" rel="noopener">open on YouTube</a></div>`
+            ${s.yt ? `<div class="zoom-hint">${UI.yt.replace('ID', s.yt)}</div>`
                    : s.dm ? `<div class="zoom-hint">Needs internet · <a href="https://www.dailymotion.com/video/${s.dm}" target="_blank" rel="noopener">open on Dailymotion</a></div>`
-                   : '<div class="zoom-hint">Plays from this site — no internet needed</div>'}
+                   : `<div class="zoom-hint">${UI.local}</div>`}
           </div>`;
 
       /* A show of hands, tallied on screen. Groups vote, she records the
@@ -363,7 +424,7 @@
          it, because this is a class discussion, not a result. */
       case 'vote':
         return `<h2>${chips(s.title)}</h2>
-          ${s.zh ? `<div class="zh-title" lang="zh-Hant">${s.zh}</div>` : ''}
+          ${s.zh ? `<div class="zh-title" lang="${ALT}">${s.zh}</div>` : ''}
           ${s.question ? `<div class="vote-q">${chips(s.question)}</div>` : ''}
           <div class="vote-opts">${s.options.map((o, k) => `
             <button class="vote-opt" data-opt="${k}" data-n="0">
@@ -391,7 +452,7 @@
           [order[k], order[j]] = [order[j], order[k]];
         }
         return `<h2>${chips(s.title)}</h2>
-          ${s.zh ? `<div class="zh-title" lang="zh-Hant">${s.zh}</div>` : ''}
+          ${s.zh ? `<div class="zh-title" lang="${ALT}">${s.zh}</div>` : ''}
           ${s.instructions ? `<div class="match-task">${chips(s.instructions)}</div>` : ''}
           <div class="match-cols">
             <ul class="match-side" data-side="a">${s.pairs.map((pr, k) =>
@@ -412,7 +473,7 @@
       case 'flow':
         return `${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ''}
           <h2>${chips(s.title)}</h2>
-          ${s.zh ? `<div class="zh-title" lang="zh-Hant">${s.zh}</div>` : ''}
+          ${s.zh ? `<div class="zh-title" lang="${ALT}">${s.zh}</div>` : ''}
           <div class="stages">${s.stages.map((st, k) => `
             <div class="stage step" data-step="${k}">
               <div class="stage-head">${chips(st.head)}</div>
@@ -423,7 +484,7 @@
       /* A story told in dated stops. */
       case 'timeline':
         return `<h2>${chips(s.title)}</h2>
-          ${s.zh ? `<div class="zh-title" lang="zh-Hant">${s.zh}</div>` : ''}
+          ${s.zh ? `<div class="zh-title" lang="${ALT}">${s.zh}</div>` : ''}
           <ol class="stops">${s.stops.map((st, k) => `
             <li class="stop step" data-step="${k}">
               <div class="stop-when">${st.when}</div>
@@ -433,7 +494,7 @@
       case 'grid':
         return `${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ''}
           <h2>${chips(s.title)}</h2>
-          ${s.zh ? `<div class="zh-title" lang="zh-Hant">${s.zh}</div>` : ''}
+          ${s.zh ? `<div class="zh-title" lang="${ALT}">${s.zh}</div>` : ''}
           <div class="cells" style="grid-template-columns:repeat(${s.cols || 2},1fr)">${s.cells.map((c, k) => `
             <div class="cell step" data-step="${k}">
               <div class="cell-label">${c.label}</div>
@@ -446,7 +507,7 @@
       case 'rank':
         return `<div class="left">
             <h2>${chips(s.title)}</h2>
-            ${s.zh ? `<div class="zh-title" lang="zh-Hant">${s.zh}</div>` : ''}
+            ${s.zh ? `<div class="zh-title" lang="${ALT}">${s.zh}</div>` : ''}
             <div class="rank-task">${chips(s.task)}</div>
             <div class="rank-cards">${s.items.map((it, k) => `
               <button class="rank-card" data-card="${k}">
@@ -465,33 +526,33 @@
               `<li class="step" data-step="${k}">${chips(q)}</li>`).join('')}</ul>
             <div class="timer" data-mins="${s.minutes}">
               <div class="clock">${String(s.minutes).padStart(2, '0')}:00</div>
-              <button data-timer="start">Start</button>
-              <button data-timer="reset">Reset</button>
+              <button data-timer="start">${UI.start}</button>
+              <button data-timer="reset">${UI.reset}</button>
             </div>
           </div>`;
 
       case 'quiz':
-        return `<div class="qnum">Question ${s.n} of ${s.of || 6}</div>
+        return `<div class="qnum">${UI.question(s.n, s.of || 6)}</div>
           <div class="qtext">${chips(s.q)}</div>
           <ul class="opts">${s.options.map((o, k) =>
             `<li class="${k === s.answer ? 'right' : ''}">
               <span class="k">${'ABCD'[k]}</span><span>${chips(o)}</span></li>`).join('')}</ul>
           <div class="why">${chips(s.why)}</div>
-          <div class="reveal-hint">Click when the class has answered</div>`;
+          <div class="reveal-hint">${UI.reveal}</div>`;
 
       case 'terms':
       case 'end':
         return `<h2>${chips(s.title)}</h2>
-          ${s.zh ? `<div class="zh-title" lang="zh-Hant">${s.zh}</div>` : ''}
+          ${s.zh ? `<div class="zh-title" lang="${ALT}">${s.zh}</div>` : ''}
           <div class="termgrid">${s.terms.map(t =>
-            `<span class="chip" data-term="${t}">${GLOSSARY[t].en}</span>`).join('')}</div>`;
+            `<span class="chip" data-term="${t}" role="button" tabindex="0">${chipLabel(GLOSSARY[t])}</span>`).join('')}</div>`;
 
       /* A handout page with gaps. Each click fills the next gap, so the
          room can call out a guess before the number goes up. */
       case 'fill':
         return `${s.kicker ? `<div class="kicker">${s.kicker}</div>` : ''}
           <h2>${chips(s.title)}</h2>
-          ${s.zh ? `<div class="zh-title" lang="zh-Hant">${s.zh}</div>` : ''}
+          ${s.zh ? `<div class="zh-title" lang="${ALT}">${s.zh}</div>` : ''}
           <div class="fill-lines">${s.lines.map(l =>
             `<p class="fill-line">${fillLine(l)}</p>`).join('')}</div>
           ${s.ask ? askBlock(s.ask, true) : ''}`;
@@ -522,11 +583,11 @@
                 <text x="370" y="266" text-anchor="middle" class="my-tag">myelin · <tspan lang="zh-Hant">髓鞘</tspan></text>
               </g>
             </svg>
-            <button class="demo-btn" data-demo="myelin">Send a signal <span lang="zh-Hant">送出訊號</span></button>
+            <button class="demo-btn" data-demo="myelin">${UI.send}</button>
           </div>
           <div class="side">
             <h2>${chips(s.title)}</h2>
-            ${s.zh ? `<div class="zh-title" lang="zh-Hant">${s.zh}</div>` : ''}
+            ${s.zh ? `<div class="zh-title" lang="${ALT}">${s.zh}</div>` : ''}
             ${s.caption ? `<div class="cap">${chips(s.caption)}</div>` : ''}
             ${pointsList(s)}
             ${s.credit ? `<div class="zoom-hint">${s.credit}</div>` : ''}
@@ -558,15 +619,15 @@
             </svg>
             <div class="net-bar">
               <span class="net-skill">${chips(s.skill)}</span>
-              <span class="net-reps">Reps: <b>0</b></span>
-              <button class="demo-btn" data-demo="rep">Practice once <span lang="zh-Hant">練習一次</span></button>
-              <button class="demo-btn quiet" data-demo="net-reset">Reset</button>
+              <span class="net-reps">${UI.reps}: <b>0</b></span>
+              <button class="demo-btn" data-demo="rep">${UI.practice}</button>
+              <button class="demo-btn quiet" data-demo="net-reset">${UI.reset}</button>
             </div>
-            <div class="net-habit">${chips(s.habit || 'Now it is a habit!')}</div>
+            <div class="net-habit">${chips(s.habit || UI.habit)}</div>
           </div>
           <div class="side">
             <h2>${chips(s.title)}</h2>
-            ${s.zh ? `<div class="zh-title" lang="zh-Hant">${s.zh}</div>` : ''}
+            ${s.zh ? `<div class="zh-title" lang="${ALT}">${s.zh}</div>` : ''}
             ${s.caption ? `<div class="cap">${chips(s.caption)}</div>` : ''}
             ${pointsList(s)}
           </div>`;
@@ -649,7 +710,7 @@
   /* ---------- speaker-note peek on the presenting screen ---------- */
   function drawPeek() {
     const s = SLIDES[idx];
-    peek.innerHTML = `<div class="peek-label">Notes · slide ${idx + 1} · press N to hide</div>` +
+    peek.innerHTML = `<div class="peek-label">${UI.peek(idx + 1)}</div>` +
       (s.notes || []).map(t => {
         const cls = /^(TEACHER|LEWIS|NOTE|CORRECTED)/.test(t) ? 'teach' : '';
         return `<p class="${cls}">${chips(t)}</p>`;
@@ -674,10 +735,9 @@
       box.appendChild(items);
       body.appendChild(box);
     });
-    menu.innerHTML = '<h2>Jump to</h2>';
+    menu.innerHTML = `<h2>${UI.jump}</h2>`;
     menu.appendChild(body);
-    menu.appendChild(el('div', 'hint',
-      'Backspace takes you back to where you jumped from. · N = notes on this screen · P = presenter window'));
+    menu.appendChild(el('div', 'hint', UI.menuHint));
   }
   function openMenu() {
     menu.classList.add('on');
@@ -700,11 +760,15 @@
       return;
     }
     chipNode = node;
-    chipcard.innerHTML = `
+    chipcard.innerHTML = ZHMODE ? `
+      <div class="term" lang="zh-Hant">${g.zh}</div>
+      <div class="term-zh" lang="en">${g.en}</div>
+      <div class="def" lang="zh-Hant">${g.zhDef}</div>
+      <div class="def-zh" lang="en">${g.def}</div>` : `
       <div class="term">${g.en}</div>
-      <div class="term-zh">${g.zh}</div>
+      <div class="term-zh" lang="zh-Hant">${g.zh}</div>
       <div class="def">${g.def}</div>
-      <div class="def-zh">${g.zhDef}</div>`;
+      <div class="def-zh" lang="zh-Hant">${g.zhDef}</div>`;
     chipcard.classList.add('on');
     const r = node.getBoundingClientRect();
     const w = chipcard.offsetWidth, h = chipcard.offsetHeight;
@@ -1015,6 +1079,7 @@
     if (lower === 'm') { menu.classList.contains('on') ? closeMenu() : openMenu(); return; }
     if (lower === 'n') { peek.classList.toggle('on'); if (peek.classList.contains('on')) drawPeek(); return; }
     if (lower === 'p') { openPresenter(); return; }
+    if (lower === 'l') { switchLang('#' + (idx + 1)); return; }
     if (lower === 'f') {
       if (document.fullscreenElement) document.exitFullscreen();
       else document.documentElement.requestFullscreen();
@@ -1030,11 +1095,16 @@
     if (peek.classList.contains('on')) drawPeek();
   };
   document.getElementById('btn-presenter').onclick = e => { e.stopPropagation(); openPresenter(); };
+  const btnLang = document.getElementById('btn-lang');
+  if (btnLang) btnLang.onclick = e => { e.stopPropagation(); switchLang('#' + (idx + 1)); };
+  applyLang();
   menu.addEventListener('click', e => { if (e.target === menu) closeMenu(); });
   lightbox.addEventListener('click', closeZoom);
 
   /* ---------- go ---------- */
   buildMenu();
   fit();
-  show(0, 0);
+  /* #7 opens on slide 7 — how a language switch keeps her place. */
+  const fromHash = parseInt(location.hash.slice(1), 10);
+  show(fromHash > 0 ? fromHash - 1 : 0, 0);
 })();

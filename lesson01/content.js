@@ -25,11 +25,13 @@ const GLOSSARY = {
     zhDef: '一再重複、常常不用想就會做的事。'
   },
   autopilot: {
+    zhChip: '慣性',
     en: 'autopilot', zh: '慣性、自動駕駛',
     def: 'When you do something without thinking about it. Your brain does it for you.',
     zhDef: '不經思考就做出反應，大腦替你「自動駕駛」。'
   },
   decision: {
+    zhChip: '決定',
     en: 'decision', zh: '決定',
     def: 'A choice. You decide what to do, say or eat.',
     zhDef: '選擇；決定要做什麼、說什麼、吃什麼。'
@@ -45,16 +47,19 @@ const GLOSSARY = {
     zhDef: '腦細胞，會傳送很小的電訊號。'
   },
   nerve_fiber: {
+    zhChip: '神經纖維',
     en: 'nerve fiber', zh: '神經纖維',
     def: 'The long, thin part of a neuron. The signal travels along it.',
     zhDef: '神經元細長的部分，訊號沿著它傳遞。'
   },
   signal: {
+    zhChip: '訊號',
     en: 'signal', zh: '電脈衝、訊號',
     def: 'A very small electric message inside your body.',
     zhDef: '身體裡非常微小的電訊息。'
   },
   network: {
+    zhChip: '神經網路',
     en: 'network', zh: '電網、神經網路',
     def: 'Many neurons connected together. One network does one job — a move, a thought, a feeling.',
     zhDef: '許多神經元連在一起；一個網路負責一件事：一個動作、一個想法、一種感受。'
@@ -95,6 +100,7 @@ const GLOSSARY = {
     zhDef: '為了進步，一再重複做一件事。'
   },
   rep: {
+    zhChip: '一次',
     en: 'rep', zh: '一次（反覆次數）',
     def: 'One time you do a practice move. Ten reps = ten times.',
     zhDef: '練習動作做一次就是一個 rep；十個 rep 就是十次。'

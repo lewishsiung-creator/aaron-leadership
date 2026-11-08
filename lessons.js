@@ -5,6 +5,8 @@
    Every built lesson has two decks: dir/work/ and dir/sport/.
    ------------------------------------------------------------------ */
 
+/* Every lesson and stage carries both languages; the index shows the
+   one the viewer picked (see shared/lang.js). */
 const STAGES = [
   { en: 'Leading Self', zh: '領導自己' },
   { en: 'Leading Others', zh: '領導團隊' },
@@ -15,7 +17,9 @@ const LESSONS = [
   { n: 1, stage: 0, dir: 'lesson01',
     title: 'Break Old Habits, Practice Change', zh: '突破慣性、練習改變',
     q: 'Why is it so hard to change — and how does the brain do it?',
-    meta: 'Habits and the brain · myelin and practice demos · Arthur’s story · 4-question quiz' },
+    meta: 'Habits and the brain · myelin and practice demos · Arthur’s story · 4-question quiz',
+    qZh: '為什麼改變這麼難？大腦又是怎麼做到的？',
+    metaZh: '習慣與大腦 · 髓鞘與練習互動圖 · Arthur 的故事 · 4 題小測驗' },
   { n: 2, stage: 0, dir: null, title: 'Speak with Influence', zh: '說出影響力' },
   { n: 3, stage: 0, dir: null, title: 'Be Your Own Coach', zh: '激發領袖潛能、成為自己的教練' },
   { n: 4, stage: 1, dir: null, title: 'From Me to the Team', zh: '從個人到團隊的高效領導力' },

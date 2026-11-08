@@ -170,3 +170,17 @@ h2 { line-height: .95; font-size: 2.9em; }
 /* The title slide's volt slash runs under the bottom-right corner, so the
    HUD gets its own dark plate there. */
 #hud { background: rgba(11,11,11,.88); padding: .35em .8em; }
+
+/* Chinese mode: Chinese has no italic and no capitals, so the headline
+   face stays upright; the weight and the volt carry the energy. */
+html[lang="zh-Hant"] h1, html[lang="zh-Hant"] h2, html[lang="zh-Hant"] .s-quiz .qtext,
+html[lang="zh-Hant"] #chipcard .term, html[lang="zh-Hant"] .s-quote blockquote,
+html[lang="zh-Hant"] .kicker, html[lang="zh-Hant"] .s-flow .stage-head,
+html[lang="zh-Hant"] .blank .bv, html[lang="zh-Hant"] .demo-btn,
+html[lang="zh-Hant"] .plain .plain-label, html[lang="zh-Hant"] .ask .tag,
+html[lang="zh-Hant"] .vid-watch .tag, html[lang="zh-Hant"] .s-quiz .qnum {
+  font-style: normal; font-weight: 900; letter-spacing: .02em; text-transform: none;
+}
+/* A Chinese title is a short run of wide glyphs: let it use the width. */
+html[lang="zh-Hant"] .s-title h1 { font-size: 5.6em; max-width: none; line-height: 1.05; }
+html[lang="zh-Hant"] .s-section h1 { max-width: none; line-height: 1.1; }

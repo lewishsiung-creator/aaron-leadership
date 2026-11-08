@@ -29,16 +29,19 @@
 </div>
 
 <div id="hud">
-  <a href="../../" title="All lessons">lessons</a>
-  <a href="../work/" title="The same lesson, professionals version">⇄ work</a>
-  <button id="btn-menu" title="Jump to a section (M)">menu</button>
-  <button id="btn-notes" title="Speaker notes on this screen (N)">notes</button>
-  <button id="btn-presenter" title="Presenter window on a second screen (P)">presenter</button>
+  <a href="../../" title="All lessons" data-zh="課程" data-zh-title="所有課程">lessons</a>
+  <a href="../work/" data-zh="⇄ 職場版" title="The same lesson, professionals version">⇄ work</a>
+  <button id="btn-lang" title="中文 / English (L)" data-zh="EN">中文</button>
+  <button id="btn-menu" title="Jump to a section (M)" data-zh="目錄" data-zh-title="跳到某一段 (M)">menu</button>
+  <button id="btn-notes" title="Speaker notes on this screen (N)" data-zh="備註" data-zh-title="在這個螢幕看講者備註 (N)">notes</button>
+  <button id="btn-presenter" title="Presenter window on a second screen (P)" data-zh="講者視窗" data-zh-title="在第二個螢幕開講者視窗 (P)">presenter</button>
   <span class="count" id="count">1 / 1</span>
 </div>
 
 <script>window.AUDIENCE = 'sport';</script>
+<script src="../../shared/lang.js"></script>
 <script src="../content.js"></script>
+<script src="../content.zh.js"></script>
 <script src="../../shared/deck.js"></script>
 </body>
 </html>
