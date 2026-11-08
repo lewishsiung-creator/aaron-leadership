@@ -29,6 +29,25 @@ The engine began as the one built for Vicky's art-history decks
 (`vicky-modern-art`), so the keys, slide types, word chips, presenter window
 and touch behaviour are the same. Its README documents all of that.
 
+## Two looks
+
+The versions differ in design as well as wording. Lewis asked for a
+"Steve Jobs" look for professionals and a "Nike" look for athletes; both
+take the manner only — no logos, slogans or brand names.
+
+- `shared/theme-work.css` — the keynote stage: black, one idea per slide,
+  very large clean type (the system font), one blue for anything tappable.
+- `shared/theme-sport.css` — the campaign poster: black, heavy condensed
+  italic capitals (Barlow Condensed from Google Fonts; falls back to a
+  system condensed face offline), one volt yellow-green, hard edges, a volt
+  slash across the title slide.
+
+`style.css` carries the layout and a default sea-blue look. Its surfaces go
+through variables (`--card`, `--card-dim`, `--on-accent`, `--menu-bg`,
+`--gold`), so a theme mostly swaps variables rather than rules. Themes must
+not change layout: the phone and touchscreen rules at the end of
+`style.css` depend on it.
+
 ## One file, two versions
 
 In `content.js`:

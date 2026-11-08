@@ -18,6 +18,13 @@
   --ink-dim:  #102a40;
   --ink-faint:#13324a;
   --rule:     rgba(23,19,18,.18);
+  /* Surfaces. Themes (theme-*.css) override these rather than the rules. */
+  --card:       #f7f0df;  /* cards, buttons, word cards */
+  --card-hover: #fffdf6;
+  --card-dim:   #44505c;  /* secondary text inside a card */
+  --on-accent:  #f7f0df;  /* text sitting on --deep / --deeper */
+  --menu-bg:    #1e5a8c;
+  --gold:       #8a6a1c;  /* myelin, and a finished habit */
   /* One easing curve for the whole deck. Every transition used the
      browser's generic `ease`, which starts and ends at slightly
      different rates in different engines; a named curve makes the
@@ -186,7 +193,7 @@ h2 {
 }
 .plain {
   margin-top: 1.6em;
-  background: var(--cream);
+  background: var(--card);
   border-radius: .5em;
   padding: 1.2em 1.4em;
   max-width: 34em;
@@ -231,7 +238,7 @@ h2 {
 .ask .tag {
   flex: none;
   font-size: .78em; letter-spacing: .18em; font-weight: 700;
-  color: var(--cream); background: var(--deeper);
+  color: var(--on-accent); background: var(--deeper);
   padding: .25em .6em; border-radius: .25em;
 }
 .ask .q {
@@ -369,7 +376,7 @@ h2 {
 .vid-play span {
   display: flex; align-items: center; justify-content: center;
   width: 2.6em; height: 2.6em; border-radius: 50%;
-  background: var(--cream); color: var(--deep);
+  background: var(--card); color: var(--deep);
   font-size: 1.6em; line-height: 1;
   padding-left: .12em;
   box-shadow: 0 .3em 1em rgba(23,19,18,.4);
@@ -384,7 +391,7 @@ h2 {
 .vid-watch .tag {
   flex: none;
   font-size: .62em; letter-spacing: .16em; font-weight: 700;
-  color: var(--cream); background: var(--deeper);
+  color: var(--on-accent); background: var(--deeper);
   padding: .35em .6em; border-radius: .25em;
 }
 .s-video .zoom-hint a { color: var(--deeper); }
@@ -428,7 +435,7 @@ h2 {
 .compare-note .side-tag {
   display: inline-block;
   font-size: .62em; letter-spacing: .14em; text-transform: uppercase;
-  color: var(--cream); background: var(--deeper);
+  color: var(--on-accent); background: var(--deeper);
   padding: .3em .55em; border-radius: .25em;
   margin-right: .8em; vertical-align: middle;
 }
@@ -461,7 +468,7 @@ h2 {
 }
 .s-break .chain span {
   font-size: 1.15em; padding: .3em .6em;
-  background: var(--cream); border-radius: .3em;
+  background: var(--card); border-radius: .3em;
   transition: opacity .4s var(--ease), transform .4s var(--ease);
 }
 .s-break .chain i {
@@ -518,7 +525,7 @@ h2 {
   border: 1px solid var(--rule); border-radius: .35em;
   padding: .5em .95em; cursor: pointer;
 }
-.timer button:hover { background: var(--cream); border-color: var(--cream); }
+.timer button:hover { background: var(--card); border-color: var(--card); }
 
 /* ---------- Concept grid (Attitude / Concept / Form / Technique) ---------- */
 .s-grid .cells {
@@ -526,7 +533,7 @@ h2 {
   gap: 1.1em; margin-top: 1.5em; max-width: 52em;
 }
 .s-grid .cell {
-  background: var(--cream); border-radius: .5em;
+  background: var(--card); border-radius: .5em;
   padding: 1.1em 1.3em;
   box-shadow: 0 .5em 1.5em rgba(23,19,18,.16);
 }
@@ -536,7 +543,7 @@ h2 {
 }
 .s-grid .cell-head { font-size: 1.24em; line-height: 1.35; font-weight: 500; }
 .s-grid .cell-body {
-  font-size: 1.02em; line-height: 1.5; color: #44505c; margin-top: .35em;
+  font-size: 1.02em; line-height: 1.5; color: var(--card-dim); margin-top: .35em;
 }
 .s-grid .cell .chip { border-bottom-color: var(--deep); }
 .s-grid .cell .chip::after { color: var(--deep); }
@@ -552,7 +559,7 @@ h2 {
   position: relative;
   flex: 1 1 0; min-width: 11em;
   font: inherit; text-align: left; cursor: pointer;
-  background: var(--cream); color: var(--ink);
+  background: var(--card); color: var(--ink);
   border: 2px solid transparent; border-radius: .5em;
   padding: 1.1em 1.2em 1.2em;
   box-shadow: 0 .4em 1.3em rgba(23,19,18,.16);
@@ -600,7 +607,7 @@ h2 {
   border: 1px solid var(--rule); border-radius: .35em;
   padding: .45em .9em; cursor: pointer;
 }
-.vote-tools button:hover { background: var(--cream); border-color: var(--cream); }
+.vote-tools button:hover { background: var(--card); border-color: var(--card); }
 .vote-hint { font-size: .88em; color: var(--deeper); }
 
 /* ---------- Matching board ---------- */
@@ -618,7 +625,7 @@ h2 {
   position: relative;
   width: 100%; text-align: left;
   font: inherit; font-size: 1.02em; line-height: 1.35;
-  background: var(--cream); color: var(--ink);
+  background: var(--card); color: var(--ink);
   border: 2px solid transparent; border-radius: .4em;
   padding: .6em 1em .6em 2.6em;
   cursor: pointer;
@@ -630,7 +637,7 @@ h2 {
 .match-badge {
   position: absolute; left: .6em; top: 50%; transform: translateY(-50%);
   width: 1.55em; height: 1.55em; border-radius: 50%;
-  background: var(--deeper); color: var(--cream);
+  background: var(--deeper); color: var(--on-accent);
   font-size: .92em; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
   opacity: 0; transition: opacity .2s var(--ease);
@@ -651,7 +658,7 @@ h2 {
   border: 1px solid var(--rule); border-radius: .35em;
   padding: .45em .9em; cursor: pointer;
 }
-.match-tools button:hover { background: var(--cream); border-color: var(--cream); }
+.match-tools button:hover { background: var(--card); border-color: var(--card); }
 .match-hint { font-size: .88em; color: var(--deeper); }
 
 /* ---------- Flow diagram ---------- */
@@ -661,7 +668,7 @@ h2 {
 }
 .s-flow .stage {
   flex: 1 1 0; min-width: 8.5em;
-  background: var(--cream); border-radius: .5em;
+  background: var(--card); border-radius: .5em;
   padding: 1.1em 1.2em;
   box-shadow: 0 .5em 1.5em rgba(23,19,18,.16);
 }
@@ -669,7 +676,7 @@ h2 {
   font-size: 1.18em; line-height: 1.3; font-weight: 600;
   margin-bottom: .45em;
 }
-.s-flow .stage-body { font-size: 1em; line-height: 1.45; color: #44505c; }
+.s-flow .stage-body { font-size: 1em; line-height: 1.45; color: var(--card-dim); }
 .s-flow .stage-arrow {
   align-self: center; flex: none;
   font-style: normal; font-size: 1.6em; color: var(--deeper);
@@ -709,7 +716,7 @@ h2 {
 .rank-card {
   position: relative;
   font: inherit; cursor: pointer;
-  background: var(--cream); border: 2px solid transparent; border-radius: .5em;
+  background: var(--card); border: 2px solid transparent; border-radius: .5em;
   padding: .9em .9em .7em;
   width: 9.4em;
   display: flex; flex-direction: column; align-items: center; gap: .6em;
@@ -729,7 +736,7 @@ h2 {
 .rank-badge {
   position: absolute; top: -.6em; left: -.6em;
   width: 1.9em; height: 1.9em; border-radius: 50%;
-  background: var(--deeper); color: var(--cream);
+  background: var(--deeper); color: var(--on-accent);
   font-size: 1.05em; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
   opacity: 0; transform: scale(.6);
@@ -743,7 +750,7 @@ h2 {
   border: 1px solid var(--rule); border-radius: .35em;
   padding: .45em .9em; cursor: pointer;
 }
-.rank-tools button:hover { background: var(--cream); border-color: var(--cream); }
+.rank-tools button:hover { background: var(--card); border-color: var(--card); }
 .rank-hint { font-size: .88em; color: var(--deeper); }
 
 /* ---------- Quiz ---------- */
@@ -767,7 +774,7 @@ h2 {
 .s-quiz.revealed .opts li { opacity: .35; }
 .s-quiz.revealed .opts li.right {
   opacity: 1;
-  background: var(--cream);
+  background: var(--card);
   border-color: var(--deeper);
   box-shadow: 0 .5em 1.5em rgba(23,19,18,.2);
 }
@@ -807,7 +814,7 @@ h2 {
   letter-spacing: 0;
 }
 .s-end .chip {
-  font-size: 1.5em; background: var(--cream);
+  font-size: 1.5em; background: var(--card);
   border: 1px solid transparent;
   border-bottom: 2px dotted var(--deep);
   border-radius: .4em; padding: .45em .8em;
@@ -817,7 +824,7 @@ h2 {
 #chipcard {
   position: fixed; z-index: 60;
   max-width: min(26em, 92vw); padding: 1.2em 1.4em;
-  background: var(--cream); color: var(--ink);
+  background: var(--card); color: var(--ink);
   border-radius: .6em;
   box-shadow: 0 1.2em 3.5em rgba(23,19,18,.45);
   display: none;
@@ -832,7 +839,7 @@ h2 {
 }
 #chipcard .def { font-size: 1.05em; line-height: 1.5; }
 #chipcard .def-zh {
-  font-size: 1em; line-height: 1.6; color: #4a5866;
+  font-size: 1em; line-height: 1.6; color: var(--card-dim);
   margin-top: .6em; padding-top: .6em; border-top: 1px solid rgba(23,19,18,.15);
 }
 
@@ -854,7 +861,7 @@ h2 {
 /* ---------- Chrome: progress, nav, menu ---------- */
 #progress {
   position: fixed; top: 0; left: 0; height: 3px;
-  background: var(--cream); z-index: 50;
+  background: var(--card); z-index: 50;
   transition: width .28s var(--ease);
 }
 /* ---------- 上一頁 / 下一頁 ----------
@@ -867,13 +874,13 @@ h2 {
 #nav button {
   font-family: var(--sans); font-size: 15px;
   display: flex; align-items: center; gap: .4em;
-  background: var(--cream); color: var(--ink);
+  background: var(--card); color: var(--ink);
   border: none; border-radius: .4em;
   padding: .7em 1.1em; cursor: pointer;
   box-shadow: 0 .3em 1em rgba(23,19,18,.22);
   transition: background .15s var(--ease), opacity .15s var(--ease), transform .1s var(--ease);
 }
-#nav button:hover:not(:disabled) { background: #fffdf6; transform: translateY(-1px); }
+#nav button:hover:not(:disabled) { background: var(--card-hover); transform: translateY(-1px); }
 #nav button:active:not(:disabled) { transform: none; }
 #nav button:disabled { opacity: .3; cursor: default; }
 #nav .ar { font-size: 1.35em; line-height: 1; color: var(--deep); }
@@ -898,7 +905,7 @@ h2 {
 
 #menu {
   position: fixed; inset: 0; z-index: 70;
-  background: #1e5a8c;
+  background: var(--menu-bg);
   color: var(--cream);
   display: none; flex-direction: column;
   padding: 6vh 8vw; overflow-y: auto;
@@ -926,7 +933,7 @@ h2 {
 #peek {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 65;
   max-height: 45vh; overflow-y: auto;
-  background: var(--cream);
+  background: var(--card);
   border-top: 3px solid var(--deeper);
   padding: 1.6em 3vw 2em;
   display: none;
@@ -949,7 +956,7 @@ body.presenter #progress,
 body.presenter #stage { display: none; }
 body.presenter {
   overflow: auto;
-  background: var(--cream);
+  background: var(--card);
   color: var(--ink);
   padding: 2.5vh 3vw;
 }
@@ -981,7 +988,7 @@ body.presenter {
   font: inherit; font-size: 1em; background: var(--bg); color: var(--ink);
   border: none; border-radius: .35em; padding: .6em 1.1em; cursor: pointer;
 }
-.pv .pv-nav button:hover { background: var(--deep); color: var(--cream); }
+.pv .pv-nav button:hover { background: var(--deep); color: var(--on-accent); }
 .pv .chip { border-bottom-color: var(--deep); }
 .pv .chip::after { color: var(--deep); }
 
@@ -1004,7 +1011,7 @@ body.course { overflow: auto; }
 .weeks li { margin-bottom: 1.1em; }
 .weeks a, .weeks .card {
   display: block; text-decoration: none; color: var(--ink);
-  background: var(--cream); border-radius: .6em;
+  background: var(--card); border-radius: .6em;
   padding: 1.5em 1.7em;
   box-shadow: 0 .5em 1.6em rgba(23,19,18,.16);
   transition: transform .18s var(--ease), box-shadow .18s var(--ease);
@@ -1023,7 +1030,7 @@ body.course { overflow: auto; }
 }
 .weeks .wk-q { display: block; font-size: 1.05em; color: var(--deep); }
 .weeks .wk-meta {
-  display: block; font-size: .9em; color: #5a6876; margin-top: .8em;
+  display: block; font-size: .9em; color: var(--card-dim); margin-top: .8em;
 }
 /* Weeks not built yet: present, but plainly not ready. */
 .weeks li.soon { margin-bottom: .5em; }
@@ -1052,7 +1059,7 @@ body.course { overflow: auto; }
   padding: 1.2em 1.7em;
   transition: background .18s var(--ease), border-color .18s var(--ease);
 }
-.vocab-link:hover { background: var(--cream); border-color: transparent; }
+.vocab-link:hover { background: var(--card); border-color: transparent; }
 .vl-t { display: block; font-family: var(--serif); font-size: 1.5em; }
 .vl-zh { font-family: var(--sans); font-size: .6em; color: var(--deeper); margin-left: .4em; }
 .vl-m { display: block; font-size: .9em; color: var(--ink-dim); margin-top: .3em; }
@@ -1076,7 +1083,7 @@ body.vocab { overflow-x: hidden; overflow-y: auto; }
 #q {
   width: 100%; font: inherit; font-size: 1.05em;
   padding: .85em 1.1em; border: none; border-radius: .5em;
-  background: var(--cream); color: var(--ink);
+  background: var(--card); color: var(--ink);
   box-shadow: 0 .4em 1.2em rgba(23,19,18,.14);
   -webkit-appearance: none;
 }
@@ -1094,7 +1101,7 @@ body.vocab { overflow-x: hidden; overflow-y: auto; }
   background: rgba(247,240,223,.28); color: var(--ink);
   text-decoration: none; font-size: .9em; font-weight: 700;
 }
-.v-jump a:hover { background: var(--cream); }
+.v-jump a:hover { background: var(--card); }
 
 .v-unit { margin-top: 3.4em; scroll-margin-top: 1.5em; }
 .v-unit h2 { font-weight: 400; line-height: 1.2; }
@@ -1114,7 +1121,7 @@ body.vocab { overflow-x: hidden; overflow-y: auto; }
 
 .v-unit dl { margin-top: 1.6em; }
 .v-term {
-  background: var(--cream); border-radius: .55em;
+  background: var(--card); border-radius: .55em;
   padding: 1.2em 1.5em; margin-bottom: .8em;
   box-shadow: 0 .35em 1.1em rgba(23,19,18,.13);
 }
@@ -1127,7 +1134,7 @@ body.vocab { overflow-x: hidden; overflow-y: auto; }
 }
 .v-term dd { margin-top: .55em; font-size: .95em; line-height: 1.6; }
 .d-en { color: var(--ink); }
-.d-zh { color: #4a5866; }
+.d-zh { color: var(--card-dim); }
 
 .v-empty {
   margin-top: 3em; font-size: 1.1em; color: var(--cream); opacity: .8;
@@ -1278,12 +1285,12 @@ body.vocab { overflow-x: hidden; overflow-y: auto; }
   opacity: 0; font-weight: 700; color: var(--deeper);
   transition: opacity .35s var(--ease);
 }
-.blank.shown { background: var(--cream); }
+.blank.shown { background: var(--card); }
 .blank.shown .bv { opacity: 1; }
 
 /* ---------- Lesson map: today's lesson ---------- */
 .s-flow .stage-body .here {
-  display: block; background: var(--deep); color: var(--cream);
+  display: block; background: var(--deep); color: var(--on-accent);
   border-radius: .3em; padding: .15em .45em; margin: -.15em -.45em .2em;
   font-weight: 600;
 }
@@ -1294,7 +1301,7 @@ body.vocab { overflow-x: hidden; overflow-y: auto; }
   flex-direction: row; align-items: center; gap: 4vw; padding: 4vh 5vw 9vh;
 }
 .demo {
-  flex: 1 1 60%; background: var(--cream); border-radius: .6em;
+  flex: 1 1 60%; background: var(--card); border-radius: .6em;
   padding: 1.2em 1.4em; box-shadow: 0 .8em 2em rgba(23,19,18,.2);
   cursor: default;
 }
@@ -1311,7 +1318,7 @@ body.vocab { overflow-x: hidden; overflow-y: auto; }
 }
 .demo-btn {
   font: inherit; font-size: 1em; font-weight: 600; cursor: pointer;
-  background: var(--deep); color: var(--cream); border: 0;
+  background: var(--deep); color: var(--on-accent); border: 0;
   border-radius: 2em; padding: .55em 1.3em; margin-top: .8em;
 }
 .demo-btn:hover { background: var(--deeper); }
@@ -1326,8 +1333,8 @@ body.vocab { overflow-x: hidden; overflow-y: auto; }
 .my-den, .my-axon, .my-end { stroke: var(--ink); stroke-width: 4; fill: none; stroke-linecap: round; }
 .my-den { stroke-width: 3; }
 .my-seg { fill: #f3d58a; stroke: #8a6a1c; stroke-width: 2; }
-.my-labels text { font-size: 15px; fill: #44505c; }
-.my-labels .my-tag { fill: #8a6a1c; font-weight: 700; }
+.my-labels text { font-size: 15px; fill: var(--card-dim); }
+.my-labels .my-tag { fill: var(--gold); font-weight: 700; }
 .my-dot { fill: #e0533d; opacity: 0; }
 .my-demo.go .my-dot.slow { animation: crawl 3.2s linear forwards; }
 .my-demo.go .my-dot.fast { animation: hop .5s steps(7, end) forwards; }
@@ -1362,7 +1369,7 @@ body.vocab { overflow-x: hidden; overflow-y: auto; }
 .net-reps { font-size: 1.1em; }
 .net-reps b { font-size: 1.3em; color: var(--deeper); }
 .net-habit {
-  margin-top: .6em; font-size: 1.2em; font-weight: 700; color: #8a6a1c;
+  margin-top: .6em; font-size: 1.2em; font-weight: 700; color: var(--gold);
   opacity: 0; transition: opacity .4s var(--ease);
 }
 .net-demo.habit .net-habit { opacity: 1; }
@@ -1381,7 +1388,7 @@ body.vocab { overflow-x: hidden; overflow-y: auto; }
 .weeks .ver { display: flex; gap: .7em; flex-wrap: wrap; margin-top: 1em; }
 .weeks .ver a {
   display: inline-block; padding: .6em 1.1em; border-radius: 2em;
-  background: var(--deep); color: var(--cream); box-shadow: none;
+  background: var(--deep); color: var(--on-accent); box-shadow: none;
   font-weight: 600; font-size: .98em;
 }
 .weeks .ver a:hover { background: var(--deeper); transform: none; box-shadow: none; }

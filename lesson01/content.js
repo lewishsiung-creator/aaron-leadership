@@ -308,7 +308,7 @@ const SLIDES_ALL = [
     habit: v('10 reps — now it is a habit! It feels {{automatic}}.',
              '10 reps — now it is a habit! It feels {{automatic}}.'),
     points: [
-      'Press “Practice once”. Watch the dark road.',
+      'Press “Practice once”. Watch the main road.',
       'Every time you use it, the road gets thicker and the signal gets faster.',
       'This is {{neuroplasticity}}: your brain changes when you practice.'
     ],

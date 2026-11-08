@@ -1,0 +1,172 @@
+/* ------------------------------------------------------------------
+   Theme: sport — the campaign poster.
+
+   For the athletes' decks. Lewis asked for "Nike style": black, heavy
+   condensed capitals that lean forward, one loud volt yellow-green,
+   hard edges, everything a little louder than it needs to be. No
+   swoosh, no slogans, no brand names — the manner only.
+
+   Headings use Barlow Condensed (Google Fonts, open licence), loaded
+   by the sport pages. Without internet they fall back to a heavy
+   system condensed face, so the deck still works offline.
+
+   Loaded after style.css; it only changes how things look, never the
+   layout the phone and touchscreen rules depend on.
+   ------------------------------------------------------------------ */
+
+:root {
+  --bg:        #0b0b0b;
+  --ink:       #fff;
+  --ink-dim:   #c9c9c9;
+  --ink-faint: #9a9a9a;
+  --deep:      #d4ff00;   /* volt: the one loud colour */
+  --deeper:    #d4ff00;
+  --cream:     #fff;
+  --rule:      rgba(255,255,255,.22);
+  --card:       #1a1a1a;
+  --card-hover: #262626;
+  --card-dim:   #bdbdbd;
+  --on-accent:  #0b0b0b;
+  --menu-bg:    #0b0b0b;
+  --gold:       #d4ff00;
+  --display: 'Barlow Condensed', 'Futura Condensed ExtraBold', 'Avenir Next Condensed', 'Helvetica Neue Condensed Black', Impact, 'PingFang TC', sans-serif;
+  --serif: var(--display);
+  --sans:  'Barlow', 'Helvetica Neue', Arial, 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+}
+
+html, body { background: #0b0b0b; }
+
+/* Headlines: capitals, heavy, leaning forward */
+h1, h2, .s-quiz .qtext, #chipcard .term, .s-word .big, .timer .clock,
+.s-quote blockquote, .weeks .wk-title {
+  font-family: var(--display);
+  font-weight: 900; font-style: italic; text-transform: uppercase;
+  letter-spacing: -.005em;
+}
+h1 { line-height: .9; }
+h2 { line-height: .95; font-size: 2.9em; }
+/* Chinese has no italic and no capitals — never fake them */
+[lang="zh-Hant"], .zh-title { font-style: normal; text-transform: none; }
+
+.kicker, .s-title .meta {
+  font-family: var(--display); font-style: italic; font-weight: 800;
+  font-size: 1.05em; letter-spacing: .08em; color: var(--deep);
+}
+.zh-title { color: var(--ink-faint); letter-spacing: .12em; }
+
+/* ---------- Title: a poster, with a volt slash across the stage ---------- */
+.s-title { overflow: hidden; }
+.s-title::before {
+  content: ''; position: absolute; z-index: -1;
+  right: -12vw; top: -30vh; width: 34vw; height: 160vh;
+  background: var(--deep); transform: rotate(18deg); opacity: .95;
+}
+.s-title h1 { font-size: 7em; max-width: 9em; }
+.s-title .sub { color: var(--ink); text-shadow: none; font-weight: 600; }
+.slide { z-index: 0; }
+
+.s-section h1 { font-size: 5.6em; max-width: 10em; }
+.s-section h1::after {
+  content: ''; display: block; width: 2.2em; height: .14em;
+  background: var(--deep); margin-top: .25em; transform: skewX(-18deg);
+}
+.s-section .sub { color: var(--ink-dim); }
+
+/* ---------- Quote: the slogan slide ---------- */
+.s-quote h2 { font-size: 1.4em; color: var(--deep); }
+.s-quote blockquote {
+  border: 0; padding: 0; margin-top: .3em;
+  font-size: 4.6em; line-height: .92; max-width: 10em; color: var(--ink);
+}
+.s-quote cite { padding: 0; color: var(--ink-faint); font-weight: 600; }
+
+/* ---------- Surfaces: hard edges, a volt stripe ---------- */
+.plain, .s-flow .stage, .demo, .s-grid .cell, #chipcard, .s-end .chip,
+.s-quiz .opts li, .timeline-card {
+  border-radius: 0; box-shadow: none;
+}
+.plain, .s-flow .stage { border-left: .35em solid var(--deep); }
+.plain .plain-label { color: var(--deep); font-family: var(--display); font-style: italic; font-size: 1em; }
+.s-flow .stage-head {
+  font-family: var(--display); font-style: italic; font-weight: 800;
+  text-transform: uppercase; font-size: 1.45em; line-height: 1;
+}
+.s-flow .stage-arrow { color: var(--deep); font-weight: 900; }
+.s-flow .stage-body .here { background: var(--deep); color: #0b0b0b; border-radius: 0; font-weight: 700; }
+.demo { border-top: .35em solid var(--deep); }
+
+.ask .tag, .vid-watch .tag {
+  background: var(--deep); color: #0b0b0b; border-radius: 0;
+  font-family: var(--display); font-style: italic; font-weight: 900; font-size: .95em;
+  padding: .1em .55em; transform: skewX(-8deg);
+}
+.ask .q { font-weight: 600; }
+
+/* ---------- Word chips ---------- */
+.chip { border-bottom: 3px solid var(--deep); }
+.chip:hover { background: rgba(212,255,0,.16); }
+.chip::after { color: var(--deep); }
+.plain .chip, .s-flow .stage .chip { border-bottom-color: var(--deep); }
+#chipcard { border-top: .3em solid var(--deep); }
+#chipcard .term-zh { color: var(--deep); }
+#chipcard .def-zh { border-top-color: var(--rule); }
+
+/* ---------- Fill-in: answers hit like a scoreboard ---------- */
+.fill-line { font-weight: 600; }
+.blank { background: transparent; border: 2px solid var(--deep); border-radius: 0; }
+.blank.shown { background: var(--deep); }
+.blank .bv {
+  color: #0b0b0b; font-family: var(--display); font-style: italic; font-weight: 900;
+  text-transform: uppercase; font-size: 1.15em;
+}
+.blank .bv .chip { border-bottom-color: #0b0b0b; }
+.blank .bv .chip::after { color: #0b0b0b; }
+
+/* ---------- Quiz ---------- */
+.s-quiz .qnum { color: var(--deep); font-family: var(--display); font-style: italic; font-weight: 800; }
+.s-quiz .opts li { background: #141414; border-color: #2a2a2a; }
+.s-quiz .opts .k { color: var(--deep); font-family: var(--display); font-style: italic; font-weight: 900; font-size: 1.2em; }
+.s-quiz.revealed .opts li.right { background: var(--deep); color: #0b0b0b; border-color: var(--deep); }
+.s-quiz.revealed .opts li.right .k { color: #0b0b0b; }
+.s-quiz .why { color: var(--ink); }
+
+/* ---------- Activity: a shot clock ---------- */
+.timer .clock { font-size: 5.4em; }
+.timer.running .clock { color: var(--deep); text-shadow: none; }
+.timer button { border-radius: 0; font-weight: 700; text-transform: uppercase; }
+.s-activity .tl .yr { color: var(--deep); font-weight: 700; }
+
+/* ---------- Diagrams ---------- */
+.my-body { fill: #333; }
+.my-seg { fill: var(--deep); stroke: none; }
+.my-dot { fill: #ff4d00; }
+.my-lane { fill: var(--ink); font-style: italic; }
+.my-labels .my-tag { fill: var(--deep); }
+.net-edge { stroke: #333; }
+.net-node { fill: #4a4a4a; }
+.net-node.on-road { fill: #fff; }
+.net-road { stroke: #fff; }
+.net-demo.habit .net-road { stroke: var(--deep); }
+@keyframes fire { 50% { stroke: #ff4d00; } }
+.net-reps b { color: var(--deep); font-family: var(--display); font-style: italic; font-size: 1.8em; }
+.demo-btn {
+  border-radius: 0; background: var(--deep); color: #0b0b0b;
+  font-family: var(--display); font-style: italic; font-weight: 900;
+  text-transform: uppercase; font-size: 1.15em; letter-spacing: .02em;
+}
+.demo-btn:hover { background: #fff; }
+.demo-btn.quiet { color: var(--ink); border-color: #444; }
+
+/* ---------- Chrome ---------- */
+#nav button {
+  background: var(--deep); color: #0b0b0b; border-radius: 0;
+  font-weight: 700; box-shadow: none;
+}
+#nav button:hover:not(:disabled) { background: #fff; }
+#nav .ar { color: #0b0b0b; }
+#progress { background: var(--deep); height: 4px; }
+#hud { color: var(--ink-faint); }
+#menu .items button.here { border-color: var(--deep); }
+/* The title slide's volt slash runs under the bottom-right corner, so the
+   HUD gets its own dark plate there. */
+#hud { background: rgba(11,11,11,.88); padding: .35em .8em; }

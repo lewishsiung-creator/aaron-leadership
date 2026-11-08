@@ -1,0 +1,140 @@
+/* ------------------------------------------------------------------
+   Theme: work — the keynote stage.
+
+   For the working-professionals decks. Lewis asked for "Steve Jobs'
+   style": a black stage, one idea per slide, very large clean type,
+   lots of empty space, one blue for anything you can touch. No logos,
+   no product names, nothing borrowed but the manner.
+
+   Loaded after style.css; it only changes how things look, never the
+   layout the phone and touchscreen rules depend on.
+   ------------------------------------------------------------------ */
+
+:root {
+  --bg:        #000;
+  --ink:       #f5f5f7;
+  --ink-dim:   #a1a1a6;
+  --ink-faint: #86868b;
+  --deep:      #2997ff;   /* the one accent: everything tappable */
+  --deeper:    #a1a1a6;   /* kickers, captions, quiet labels */
+  --cream:     #f5f5f7;   /* light text on the stage */
+  --rule:      rgba(255,255,255,.14);
+  --card:       #1d1d1f;
+  --card-hover: #2c2c2e;
+  --card-dim:   #a1a1a6;
+  --on-accent:  #fff;
+  --menu-bg:    #000;
+  --gold:       #ffd60a;
+  --serif: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+  --sans:  -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+}
+
+/* A stage, not a flat colour: a little light falls from above. */
+html, body { background: #000; }
+#stage { background: radial-gradient(120% 80% at 50% -10%, #1c1c1e 0%, #000 62%); position: fixed; inset: 0; }
+
+h1, h2 { font-weight: 600; letter-spacing: -.025em; }
+h1 { line-height: 1.04; }
+.kicker, .s-title .meta {
+  letter-spacing: .02em; text-transform: none; font-weight: 600; color: var(--ink-faint);
+}
+.zh-title { letter-spacing: .1em; color: var(--ink-faint); }
+
+/* ---------- Title, section, quote: centred, and big ---------- */
+.s-title, .s-section { align-items: center; text-align: center; }
+.s-title h1 {
+  font-size: 5.6em; max-width: 12em;
+  background: linear-gradient(180deg, #fff 30%, #8e8e93 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.s-title .sub { color: var(--ink-dim); text-shadow: none; font-weight: 400; max-width: 28em; }
+.s-section h1 { font-size: 4.4em; max-width: 13em; }
+.s-section .sub { color: var(--ink-faint); max-width: none; }
+.s-section .ask { justify-content: center; margin-left: auto; margin-right: auto; text-align: left; }
+
+.s-quote { align-items: center; text-align: center; }
+.s-quote h2 { font-size: 1.3em; font-weight: 600; color: var(--ink-faint); letter-spacing: 0; }
+.s-quote blockquote {
+  border: 0; padding: 0; margin-top: .6em;
+  font-size: 3.4em; line-height: 1.1; font-weight: 600; letter-spacing: -.025em;
+  max-width: 14em;
+  background: linear-gradient(90deg, #fff, #a1c8ff);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.s-quote cite { padding: 0; color: var(--ink-faint); }
+.s-quote .plain { text-align: left; margin-left: auto; margin-right: auto; }
+
+/* ---------- Surfaces ---------- */
+.plain, .s-flow .stage, .demo, .s-grid .cell, #chipcard, .s-end .chip {
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: none;
+}
+.plain, .s-flow .stage, .demo { border-radius: 1.1em; }
+.plain .plain-label { color: var(--ink-faint); letter-spacing: .08em; }
+.s-flow .stage-head { font-weight: 600; }
+.s-flow .stage-arrow { color: #48484a; }
+.s-flow .stage-body .here { background: var(--deep); color: #fff; border-radius: .5em; }
+
+/* Tags: a small blue pill instead of a stamped box */
+.ask .tag, .vid-watch .tag {
+  background: var(--deep); color: #fff; border-radius: 1em; padding: .25em .7em;
+  letter-spacing: .08em;
+}
+.ask .q { color: var(--ink); }
+
+/* ---------- Word chips: a quiet blue line ---------- */
+.chip { border-bottom: 1px solid rgba(41,151,255,.7); }
+.chip:hover { background: rgba(41,151,255,.14); }
+.chip::after { color: var(--deep); }
+.plain .chip, .s-flow .stage .chip { border-bottom-color: rgba(41,151,255,.7); }
+#chipcard { border-radius: 1em; box-shadow: 0 2em 4em rgba(0,0,0,.6); }
+#chipcard .term { font-weight: 600; letter-spacing: -.02em; }
+#chipcard .def-zh { border-top-color: var(--rule); }
+
+/* ---------- Fill-in: the number is the hero ---------- */
+.blank { background: #1d1d1f; border: 0; border-radius: .4em; }
+.blank.shown { background: transparent; }
+.blank .bv {
+  background: linear-gradient(90deg, #2997ff, #bf5af2);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.blank .bv .chip { color: #fff; -webkit-text-fill-color: #fff; }
+.fill-line { font-weight: 500; letter-spacing: -.01em; }
+
+/* ---------- Quiz ---------- */
+.s-quiz .qtext { font-weight: 600; letter-spacing: -.02em; }
+.s-quiz .opts li { border-radius: .8em; background: rgba(255,255,255,.03); }
+.s-quiz .opts .k { color: var(--ink-faint); }
+.s-quiz.revealed .opts li.right { border-color: var(--deep); box-shadow: 0 0 0 1px var(--deep); }
+.s-quiz.revealed .opts li.right .k { color: var(--deep); }
+.s-quiz .why { color: var(--ink-dim); }
+
+/* ---------- Activity ---------- */
+.timer .clock { font-weight: 200; letter-spacing: -.03em; }
+.timer.running .clock { color: var(--deep); text-shadow: none; }
+.timer button { border-radius: 2em; }
+
+/* ---------- Diagrams on a dark card ---------- */
+.my-body { fill: #3a3a3c; }
+.my-seg { fill: #ffd60a; stroke: none; }
+.my-dot { fill: #ff375f; }
+.my-lane { fill: var(--ink); }
+.net-edge { stroke: #3a3a3c; }
+.net-node { fill: #48484a; }
+.net-node.on-road { fill: var(--deep); }
+.net-demo.habit .net-road { stroke: #ffd60a; }
+@keyframes fire { 50% { stroke: #ff375f; } }
+.demo-btn { border-radius: 2em; }
+.demo-btn.quiet { color: var(--ink); }
+
+/* ---------- Chrome: glass buttons ---------- */
+#nav button {
+  background: rgba(255,255,255,.1); color: var(--ink);
+  -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+  border-radius: 2em; box-shadow: none;
+}
+#nav button:hover:not(:disabled) { background: rgba(255,255,255,.18); }
+#nav .ar { color: var(--ink); }
+#progress { background: rgba(255,255,255,.5); height: 2px; }
+#hud { color: var(--ink-faint); }
+#menu .items button.here { border-color: var(--deep); }
