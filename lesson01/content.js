@@ -111,7 +111,7 @@ const SLIDES_ALL = [
   /* =============================== START */
   {
     type: 'title', sec: { title: 'Start', zh: '開場' },
-    meta: 'Performance-Driven Leadership · Lesson 1 of 9',
+    meta: '<span lang="zh-Hant">極限人生企管顧問</span> · Performance-Driven Leadership · Lesson 1 of 9',
     title: 'Break Old Habits, Practice Change',
     sub: v('突破慣性、練習改變 · a workshop for working professionals',
            '突破慣性、練習改變 · a workshop for athletes'),

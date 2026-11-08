@@ -1,7 +1,9 @@
 # Performance-Driven Leadership — workshop decks
 
 Interactive workshop decks for Aaron Kao's nine-lesson leadership course
-(績效導向・領導力訓練). English at CEFR A2, with Chinese on the key words.
+(績效導向・領導力訓練), run by 極限人生企管顧問 · Inspire for Better. The
+company name is on the course index and each title slide, as text — the
+logo is not on the site. English at CEFR A2, with Chinese on the key words.
 Every lesson comes in **two versions** from one source file:
 
 - **work** — for working professionals (職場專業人士)
