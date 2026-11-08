@@ -3,6 +3,7 @@
 
    `dir: null` = not built yet (the card shows, greyed, not clickable).
    Every built lesson has two decks: dir/work/ and dir/sport/.
+   `practice: true` adds the link to dir/practice/, Aaron's English rehearsal page.
    ------------------------------------------------------------------ */
 
 /* Every lesson and stage carries both languages; the index shows the
@@ -14,7 +15,7 @@ const STAGES = [
 ];
 
 const LESSONS = [
-  { n: 1, stage: 0, dir: 'lesson01',
+  { n: 1, stage: 0, dir: 'lesson01', practice: true,
     title: 'Break Old Habits, Practice Change', zh: '突破慣性、練習改變',
     q: 'Why is it so hard to change — and how does the brain do it?',
     meta: 'Habits and the brain · myelin and practice demos · Arthur’s story · 4-question quiz',

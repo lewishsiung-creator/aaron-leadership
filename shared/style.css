@@ -1503,3 +1503,9 @@ html[lang="zh-Hant"] .weeks .ver a.v-sport { font-style: normal; }
   .weeks .ver { flex-direction: column; }
   .weeks .ver a { text-align: center; }
 }
+.weeks a.v-practice {
+  display: inline-block; margin-top: 1em; padding: 0; background: none; box-shadow: none;
+  color: var(--deep); font-weight: 600; font-size: .95em; text-decoration: none;
+  border-bottom: 1px solid var(--rule); border-radius: 0;
+}
+.weeks a.v-practice:hover { transform: none; box-shadow: none; border-bottom-color: var(--deep); }

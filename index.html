@@ -53,7 +53,9 @@ document.getElementById('lessons').innerHTML = STAGES.map((st, si) =>
         <span class="ver">
           <a class="v-work" href="${l.dir}/work/">${one('For professionals', '職場專業人士')}<span lang="${Z ? 'en' : 'zh-Hant'}">${one('職場專業人士', 'For professionals')}</span></a>
           <a class="v-sport" href="${l.dir}/sport/">${one('For athletes', '運動員')}<span lang="${Z ? 'en' : 'zh-Hant'}">${one('運動員', 'For athletes')}</span></a>
-        </span></span></li>`;
+        </span>
+        ${l.practice ? `<a class="v-practice" href="${l.dir}/practice/">${one('Practice the English · 英文練習', '英文練習 · 講稿、發音、問答')} →</a>` : ''}
+        </span></li>`;
   }).join('')).join('');
 applyLang();
 document.getElementById('btn-lang').onclick = () => switchLang();

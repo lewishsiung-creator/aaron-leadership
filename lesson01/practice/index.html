@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>英文練習 · Lesson 1 · Break Old Habits, Practice Change</title>
+<meta name="description" content="Aaron 的英文練習頁：第 1 課的逐頁講稿、難唸的字、可能被問的問題、帶活動的句子。">
+<link rel="stylesheet" href="../../shared/style.css">
+<link rel="stylesheet" href="../../shared/practice.css">
+</head>
+<body class="course practice">
+
+<main class="course-page">
+  <header>
+    <div class="course-kicker"><a href="../../">← 所有課程</a> · 英文練習 · B1</div>
+    <h1>Break Old Habits, Practice Change</h1>
+    <div class="course-alt">第 1 課 · 突破慣性、練習改變</div>
+    <p class="course-sub">
+      逐頁講稿是你上台要說的英文。點一句英文看中文，按 🔊 聽一遍，再自己說一遍。
+      🔊 是瀏覽器的電腦語音，只能參考節奏和發音。
+    </p>
+    <div class="pr-tabs" id="tabs"></div>
+    <nav class="pr-jump">
+      <a href="#script">逐頁講稿</a><a href="#words">難唸的字</a><a href="#qa">可能被問的問題</a><a href="#phrases">帶活動的句子</a>
+      <button id="all-zh" type="button">全部顯示中文</button>
+    </nav>
+  </header>
+
+  <section id="script">
+    <h2>逐頁講稿 <span class="pr-total" id="total"></span></h2>
+    <ol class="pr-slides" id="slides"></ol>
+  </section>
+
+  <section id="words">
+    <h2>難唸的字</h2>
+    <ul class="pr-words" id="wordlist"></ul>
+  </section>
+
+  <section id="qa">
+    <h2>可能被問的問題</h2>
+    <ul class="pr-qa" id="qalist"></ul>
+  </section>
+
+  <section id="phrases">
+    <h2>帶活動的句子</h2>
+    <ul class="pr-lines pr-phrases" id="phraselist"></ul>
+  </section>
+
+  <footer class="course-foot">Aaron Kao · <span lang="zh-Hant">極限人生企管顧問</span></footer>
+</main>
+
+<script>
+  /* Which version to rehearse: ?v=sport, else work. */
+  window.AUDIENCE = new URLSearchParams(location.search).get('v') === 'sport' ? 'sport' : 'work';
+</script>
+<script src="../content.js"></script>
+<script src="../content.zh.js"></script>
+<script src="../practice.js"></script>
+<script>
+(function () {
+  'use strict';
+  const AUDV = window.AUDIENCE;
+  const ZHT = window.ZH || {};
+  const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const plain = t => String(t || '').replace(/\{\{(\w+)\}\}/g, (m, k) => GLOSSARY[k] ? GLOSSARY[k].en : k)
+                                     .replace(/<[^>]+>/g, '').replace(/\[\[|\]\]/g, '');
+  const pick = x => (x && x.work && x.sport) ? x[AUDV] : x;
+
+  /* ---------- version tabs ---------- */
+  document.getElementById('tabs').innerHTML =
+    [['work', '職場專業人士版'], ['sport', '運動員版']].map(([k, label]) =>
+      `<a href="?v=${k}" class="${k === AUDV ? 'on' : ''}">${label}</a>`).join('');
+
+  /* ---------- the computer voice ----------
+     Prefers a natural US English voice where the machine has one. */
+  let voice = null;
+  function chooseVoice() {
+    const vs = speechSynthesis.getVoices().filter(v => /^en[-_]US/i.test(v.lang));
+    voice = vs.find(v => /Samantha|Ava|Allison|Google US English/i.test(v.name)) || vs[0] || null;
+  }
+  const canSpeak = 'speechSynthesis' in window;
+  if (canSpeak) { chooseVoice(); speechSynthesis.onvoiceschanged = chooseVoice; }
+  function speak(text, btn) {
+    if (!canSpeak) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US'; u.rate = 0.9;
+    if (voice) u.voice = voice;
+    document.querySelectorAll('.say.playing').forEach(b => b.classList.remove('playing'));
+    btn.classList.add('playing');
+    u.onend = u.onerror = () => btn.classList.remove('playing');
+    speechSynthesis.speak(u);
+  }
+  const sayBtn = text => canSpeak
+    ? `<button class="say" type="button" data-say="${esc(text).replace(/"/g, '&quot;')}" aria-label="聽">🔊</button>` : '';
+  const line = l => `<li><div class="pr-en">${sayBtn(l.en)}<span class="pr-t" role="button" tabindex="0">${esc(l.en)}</span></div>
+      <div class="pr-zh" lang="zh-Hant">${esc(l.zh)}</div></li>`;
+
+  /* ---------- the script, slide by slide ---------- */
+  let total = 0;
+  document.getElementById('slides').innerHTML = SLIDES.map((sl, i) => {
+    const key = sl.title || (sl.type === 'quiz' ? 'Q' + sl.n : '');
+    const sc = SCRIPT[key];
+    const en = plain(sl.title || ('Question ' + sl.n));
+    const zh = sl.title ? plain(ZHT[sl.title] || '') : '第 ' + sl.n + ' 題';
+    if (sc) total += sc.mins;
+    const lines = sc ? sc.lines.map(pick) : [];
+    return `<li class="pr-slide">
+      <div class="pr-head">
+        <span class="pr-n">${i + 1}</span>
+        <span class="pr-title">${esc(en)}${zh ? `<span class="pr-title-zh" lang="zh-Hant">${esc(zh)}</span>` : ''}</span>
+        ${sc ? `<span class="pr-mins">${sc.mins} 分</span>` : ''}
+        <a class="pr-open" href="../${AUDV}/#${i + 1}" target="_blank" rel="noopener">看這頁 ↗</a>
+      </div>
+      ${lines.length ? `<ul class="pr-lines">${lines.map(line).join('')}</ul>`
+                     : '<p class="pr-todo">講稿還沒寫</p>'}
+    </li>`;
+  }).join('');
+  document.getElementById('total').textContent = `· 全部約 ${Math.round(total)} 分鐘`;
+
+  /* ---------- hard words ---------- */
+  document.getElementById('wordlist').innerHTML = WORDS.filter(w => !w.only || w.only === AUDV).map(w => `
+    <li>
+      <div class="pr-w">${sayBtn(w.w)}<b>${esc(w.w)}</b><span class="pr-zhw" lang="zh-Hant">${esc(w.zh)}</span></div>
+      <div class="pr-ipa"><span>${esc(w.ipa)}</span><span class="pr-re">${esc(w.re)}</span></div>
+      ${w.tip ? `<div class="pr-tip" lang="zh-Hant">${esc(w.tip)}</div>` : ''}
+    </li>`).join('');
+
+  /* ---------- likely questions ---------- */
+  document.getElementById('qalist').innerHTML = QA.filter(x => !x.only || x.only === AUDV).map(x => `
+    <li>
+      <div class="pr-q">${sayBtn(x.q)}<b>${esc(x.q)}</b><span class="pr-zhw" lang="zh-Hant">${esc(x.qzh)}</span></div>
+      <ul class="pr-lines">${line({ en: x.a, zh: x.azh })}</ul>
+      ${x.note ? `<div class="pr-tip" lang="zh-Hant">${esc(x.note)}</div>` : ''}
+    </li>`).join('');
+
+  /* ---------- workshop phrases ---------- */
+  document.getElementById('phraselist').innerHTML = PHRASES.map(line).join('');
+
+  /* ---------- taps ---------- */
+  document.addEventListener('click', e => {
+    const b = e.target.closest('.say');
+    if (b) { speak(b.dataset.say, b); return; }
+    const t = e.target.closest('.pr-t');
+    if (t) t.closest('li').classList.toggle('show');
+  });
+  document.addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('pr-t')) {
+      e.preventDefault(); e.target.closest('li').classList.toggle('show');
+    }
+  });
+  const allBtn = document.getElementById('all-zh');
+  allBtn.onclick = () => {
+    const on = document.body.classList.toggle('all-zh');
+    allBtn.textContent = on ? '收起中文' : '全部顯示中文';
+  };
+})();
+</script>
+</body>
+</html>

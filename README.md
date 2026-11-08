@@ -113,6 +113,26 @@ copyrighted and are not used here.
 The work and sport versions use separate presenter channels, so having both
 open never makes one drive the other.
 
+## Practice page (Aaron's English rehearsal)
+
+`lessonNN/practice/` — for Aaron, who is **B1**, to rehearse delivering the
+English deck. Linked from the lesson's card on the homepage. Two tabs
+(`?v=work` / `?v=sport`).
+
+- **Script, slide by slide** — what he says, first person, short sentences,
+  with suggested minutes per slide (Lesson 1: about 44 minutes). Tap a line
+  for the Chinese; 🔊 reads it with the browser's own voice (a stand-in, not
+  a model to copy). Each slide links to that slide in the deck.
+- **Hard words** — IPA, a stress respelling, and a tip.
+- **Likely questions** — with a B1 answer, and the source where it matters
+  (the 3,000 / 80% figures have none; Wood et al. 2002 gives ~43%; Lally et
+  al. 2010 gives a 66-day median for forming a habit).
+- **Workshop phrases** for running activities.
+
+Data is `lessonNN/practice.js`. `SCRIPT` is keyed by each slide's English
+title (`Q1`… for quizzes), so reordering slides does not break it; a slide
+with no entry shows "講稿還沒寫". Printing the page shows all the Chinese.
+
 ## Presenting extras (UX pass, 9 November 2026)
 
 - **Swipe** left/right turns the page on phones and tablets (not when the

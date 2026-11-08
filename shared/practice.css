@@ -1,0 +1,93 @@
+/* ------------------------------------------------------------------
+   Practice pages — Aaron rehearsing a lesson in English.
+   Sits on the white course-index page from style.css.
+   ------------------------------------------------------------------ */
+
+body.practice .course-page { max-width: 48em; }
+body.practice .course-kicker a { color: inherit; }
+body.practice h2 {
+  font-size: 1.7em; margin: 2.4em 0 .9em; padding-top: .6em;
+  border-top: 1px solid var(--rule);
+}
+.pr-total { font-family: var(--sans); font-size: .5em; color: var(--deeper); font-weight: 600; }
+
+/* version tabs and the in-page jump bar */
+.pr-tabs { display: flex; gap: .5em; margin-top: 1.6em; }
+.pr-tabs a {
+  text-decoration: none; padding: .55em 1.2em; border-radius: 2em;
+  color: var(--deep); border: 1px solid var(--rule); font-weight: 600;
+}
+.pr-tabs a.on { background: var(--deep); color: var(--on-accent); border-color: var(--deep); }
+.pr-jump {
+  position: sticky; top: 0; z-index: 5; background: #fff;
+  display: flex; flex-wrap: wrap; gap: .3em 1.1em; align-items: center;
+  padding: .9em 0; margin-top: 1em; border-bottom: 1px solid var(--rule);
+  font-size: .95em;
+}
+.pr-jump a { color: var(--deep); text-decoration: none; font-weight: 600; }
+.pr-jump button {
+  margin-left: auto; font: inherit; font-size: .92em; cursor: pointer;
+  background: var(--card); border: 1px solid var(--rule); border-radius: 2em;
+  padding: .35em .9em; color: var(--ink);
+}
+
+/* one card per slide */
+.pr-slides { list-style: none; }
+.pr-slide {
+  background: var(--card); border-radius: .7em; padding: 1.1em 1.3em;
+  margin-bottom: .9em;
+}
+.pr-head { display: flex; align-items: baseline; gap: .7em; flex-wrap: wrap; margin-bottom: .6em; }
+.pr-n {
+  flex: none; width: 1.9em; height: 1.9em; border-radius: 50%;
+  background: var(--deep); color: var(--on-accent);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: .85em; font-weight: 700; align-self: center;
+}
+.pr-title { font-weight: 700; font-size: 1.08em; flex: 1 1 14em; }
+.pr-title-zh { display: block; font-weight: 400; font-size: .85em; color: var(--card-dim); margin-top: .1em; }
+.pr-mins { font-size: .85em; color: var(--deeper); font-weight: 600; }
+.pr-open { font-size: .85em; color: var(--deep); text-decoration: none; white-space: nowrap; }
+.pr-todo { color: var(--card-dim); font-style: italic; }
+
+/* script lines: English first; tap for the Chinese */
+.pr-lines { list-style: none; }
+.pr-lines > li { padding: .45em 0; border-top: 1px solid rgba(23,19,18,.07); }
+.pr-lines > li:first-child { border-top: 0; }
+.pr-en { display: flex; gap: .55em; align-items: baseline; }
+.pr-t { font-size: 1.08em; line-height: 1.5; cursor: pointer; }
+.pr-zh {
+  display: none; margin: .2em 0 0 2.35em; color: var(--card-dim); font-size: .95em; line-height: 1.55;
+}
+li.show > .pr-zh, li.show .pr-zh, body.all-zh .pr-zh { display: block; }
+
+.say {
+  flex: none; font-size: .9em; line-height: 1; cursor: pointer;
+  background: #fff; border: 1px solid var(--rule); border-radius: 50%;
+  width: 1.95em; height: 1.95em; display: inline-flex; align-items: center; justify-content: center;
+}
+.say:hover { border-color: var(--deep); }
+.say.playing { background: var(--deep); border-color: var(--deep); }
+
+/* hard words */
+.pr-words { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(15em, 1fr)); gap: .8em; }
+.pr-words li { background: var(--card); border-radius: .7em; padding: .9em 1.1em; }
+.pr-w, .pr-q { display: flex; gap: .55em; align-items: baseline; flex-wrap: wrap; }
+.pr-w b { font-size: 1.15em; }
+.pr-q b { font-size: 1.08em; flex: 1 1 16em; }
+.pr-zhw { color: var(--card-dim); font-size: .92em; }
+.pr-ipa { margin-top: .35em; display: flex; gap: .8em; flex-wrap: wrap; font-size: .95em; }
+.pr-re { font-weight: 700; color: var(--deep); letter-spacing: .02em; }
+.pr-tip { margin-top: .45em; font-size: .9em; color: var(--card-dim); line-height: 1.5; }
+
+/* questions */
+.pr-qa { list-style: none; }
+.pr-qa > li { background: var(--card); border-radius: .7em; padding: 1em 1.2em; margin-bottom: .8em; }
+.pr-qa .pr-lines { margin-top: .5em; }
+
+.pr-phrases { background: var(--card); border-radius: .7em; padding: .6em 1.2em; }
+
+@media print {
+  .say, .pr-jump, .pr-tabs, .pr-open { display: none !important; }
+  .pr-zh { display: block !important; }
+}
