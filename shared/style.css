@@ -1582,3 +1582,22 @@ html[lang="zh-Hant"] .weeks .ver a.v-sport { font-style: normal; }
 /* Something not yet revealed cannot be clicked: an invisible Start
    button or word chip used to answer a stray tap. */
 .step:not(.shown) { pointer-events: none; }
+
+/* Presenter: a way back to the slides, and a jump list */
+.pv .pv-todeck {
+  font: inherit; font-size: .95em; cursor: pointer; margin-bottom: 1em;
+  background: none; border: 1px solid var(--rule); border-radius: 2em;
+  color: var(--deep); padding: .4em 1em;
+}
+.pv .pv-todeck:hover { border-color: var(--deep); }
+.pv .pv-nav { flex-wrap: wrap; }
+.pv .pv-jump { display: none; margin-top: 1em; padding: 1em; background: var(--bg); border-radius: .5em; }
+.pv .pv-jump.on { display: grid; grid-template-columns: repeat(auto-fill, minmax(15em, 1fr)); gap: 1em 1.4em; }
+.pv .pv-sec-head { color: var(--deep); font-weight: 700; margin-bottom: .4em; }
+.pv .pv-jump button {
+  display: block; width: 100%; text-align: left; font: inherit; font-size: .95em; cursor: pointer;
+  background: none; border: 0; border-left: 3px solid transparent; color: var(--ink);
+  padding: .35em .6em; border-radius: 0 .3em .3em 0;
+}
+.pv .pv-jump button:hover { background: var(--card); }
+.pv .pv-jump button.here { border-left-color: var(--deep); background: var(--card); }

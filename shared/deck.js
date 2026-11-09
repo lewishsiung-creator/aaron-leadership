@@ -49,7 +49,8 @@
     nextClick: '下一下：', nextSlide: '換到下一頁', answer: '公布答案', allAtOnce: '整頁一次出現',
     clockWait: '離開第 1 頁時開始計時', elapsed: x => `已過 ${x}`, plan: (a, b) => `預計第 ${a}–${b} 分鐘`, total: m => `全長約 ${m} 分鐘`,
     onTime: '進度剛好', behind: m => `慢了 ${m} 分鐘`, ahead: m => `快了 ${m} 分鐘`,
-    timer: '計時器', blank: '畫面是黑的 · 按 B 回來', blankBtn: '黑畫面 (B)', example: '範例'
+    timer: '計時器', blank: '畫面是黑的 · 按 B 回來', blankBtn: '黑畫面 (B)', example: '範例',
+    toDeck: '← 回到簡報', jumpBtn: '跳到…', jumpClose: '收起目錄'
   } : {
     simple: 'In simple words', ask: 'ASK', watch: 'WATCH FOR',
     question: (n, of) => `Question ${n} of ${of}`, reveal: 'Click when the class has answered',
@@ -74,7 +75,8 @@
     nextClick: 'Next click: ', nextSlide: 'next slide', answer: 'shows the answer', allAtOnce: 'shows the whole slide',
     clockWait: 'The clock starts when you leave slide 1', elapsed: x => `${x} elapsed`, plan: (a, b) => `plan ${a}–${b} min`, total: m => `about ${m} min in all`,
     onTime: 'on time', behind: m => `${m} min behind`, ahead: m => `${m} min ahead`,
-    timer: 'Timer', blank: 'The screen is black · press B to bring it back', blankBtn: 'Black screen (B)', example: 'Example'
+    timer: 'Timer', blank: 'The screen is black · press B to bring it back', blankBtn: 'Black screen (B)', example: 'Example',
+    toDeck: '← Back to the slides', jumpBtn: 'Jump to…', jumpClose: 'Close the list'
   };
 
   /* ---------- the time plan ----------
@@ -208,7 +210,7 @@
     const root = el('div', 'pv');
     document.body.appendChild(root);
 
-    let idx = 0, step = 0, st = {};
+    let idx = 0, step = 0, st = {}, jumpOpen = false;
     const mmss = ms => { const s = Math.max(0, Math.round(ms / 1000));
       return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
 
@@ -229,6 +231,7 @@
         : `${UI.nextClick}${UI.nextSlide}${nx ? ` · <b>${titleOf(nx)}</b>` : ''}`;
 
       root.innerHTML = `
+        <button class="pv-todeck" type="button">${UI.toDeck}</button>
         <div class="pv-top">
           <div class="where">${idx + 1} / ${SLIDES.length} · ${titleOf(s)}</div>
           <div class="clock">${UI.step(step, stepsFor(s))}</div>
@@ -247,11 +250,41 @@
         <div class="pv-nav">
           <button data-go="prev">${UI.back}</button>
           <button data-go="next">${UI.fwd}</button>
+          <button class="pv-jumpbtn" type="button">${jumpOpen ? UI.jumpClose : UI.jumpBtn}</button>
           <button data-go="blank" class="quiet">${UI.blankBtn}</button>
-        </div>`;
+        </div>
+        <div class="pv-jump ${jumpOpen ? 'on' : ''}">${SECTIONS.map((sec, si) => {
+          const end = SECTIONS[si + 1] ? SECTIONS[si + 1].start : SLIDES.length;
+          let btns = '';
+          for (let i = sec.start; i < end; i++)
+            btns += `<button type="button" data-jump="${i}" class="${i === idx ? 'here' : ''}">${i + 1} · ${titleOf(SLIDES[i])}</button>`;
+          return `<div class="pv-sec"><div class="pv-sec-head">${sec.title}</div>${btns}</div>`;
+        }).join('')}</div>`;
       root.querySelectorAll('[data-go]').forEach(b => {
         b.onclick = () => post({ nav: b.dataset.go });
       });
+      root.querySelector('.pv-jumpbtn').onclick = () => {
+        jumpOpen = !jumpOpen; draw();
+        if (jumpOpen) root.querySelector('.pv-jump').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      };
+      root.querySelectorAll('[data-jump]').forEach(b => {
+        b.onclick = () => { jumpOpen = false; post({ nav: 'jump', i: +b.dataset.jump }); };
+      });
+      /* Back to the slides. A separate window comes to the front; on an
+         iPad the presenter is a tab, which a page cannot switch away from,
+         so it closes itself instead — the slides are the tab underneath.
+         Opened by hand (no opener), it turns into the slides. */
+      root.querySelector('.pv-todeck').onclick = () => {
+        const deckUrl = location.pathname + '#' + (idx + 1);
+        if (!window.opener || window.opener.closed) { location.href = deckUrl; return; }
+        try { window.opener.focus(); } catch (e) {}
+        setTimeout(() => {
+          if (document.visibilityState === 'visible') {
+            window.close();
+            setTimeout(() => { location.href = deckUrl; }, 300);
+          }
+        }, 350);
+      };
       tick();
     }
 
@@ -1079,6 +1112,7 @@
     if (e.data && e.data.nav === 'next') next();
     if (e.data && e.data.nav === 'prev') prev();
     if (e.data && e.data.nav === 'blank') toggleBlank();
+    if (e.data && e.data.nav === 'jump') jump(e.data.i);
   };
   window.addEventListener('storage', e => {
     if (e.key === CH + ':cmd') {
@@ -1086,6 +1120,7 @@
       if (d.nav === 'next') next();
       if (d.nav === 'prev') prev();
       if (d.nav === 'blank') toggleBlank();
+      if (d.nav === 'jump') jump(d.i);
     }
   });
   function openPresenter() {

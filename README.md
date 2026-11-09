@@ -181,6 +181,12 @@ should always know whether they are on time.
   - **Next click:** what the next click will put on screen (the next
     number, the ASK, the answer, or the next slide);
   - a *black screen* button and indicator.
+  - **← 回到簡報 / Back to the slides**: brings a separate presenter
+    window's slides to the front; on an iPad (where the presenter is a tab)
+    it closes the presenter tab, leaving the slides tab; opened by hand, it
+    turns into the slides at the current slide;
+  - **跳到… / Jump to…**: every section and slide, to jump the slides from
+    the presenter.
   The clocks update every second without redrawing the notes, so the notes
   never jump back to the top while being read.
 
