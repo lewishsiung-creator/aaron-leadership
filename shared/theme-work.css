@@ -146,3 +146,8 @@ h1 { line-height: 1.04; }
 .help-box h2 { font-weight: 600; letter-spacing: -.02em; }
 .timer button { border-radius: 2em; }
 .timer button.go { color: #fff; }
+
+/* Workshop flow */
+:root { --bar: rgba(255,255,255,.6); }
+#progress.seg b { background: rgba(255,255,255,.12); }
+.s-section .agenda { letter-spacing: -.005em; }

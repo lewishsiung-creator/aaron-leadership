@@ -1509,3 +1509,76 @@ html[lang="zh-Hant"] .weeks .ver a.v-sport { font-style: normal; }
   border-bottom: 1px solid var(--rule); border-radius: 0;
 }
 .weeks a.v-practice:hover { transform: none; box-shadow: none; border-bottom-color: var(--deep); }
+
+/* ==================================================================
+   Workshop flow (Nov 2026)
+   ================================================================== */
+
+/* Progress in sections: one segment per part of today's workshop. */
+#progress.seg {
+  right: 0; width: auto !important; display: flex; gap: 3px;
+  background: none !important; transition: none;
+}
+#progress.seg b { display: block; height: 100%; background: var(--rule); overflow: hidden; }
+#progress.seg i { display: block; height: 100%; width: 0; background: var(--bar, var(--deep)); transition: width .28s var(--ease); }
+
+/* The agenda on every section divider: done · now · to come. */
+.s-section .agenda {
+  position: absolute; top: 7vh; left: 0; right: 0; padding: 0 6vw;
+  display: flex; justify-content: center; flex-wrap: wrap; gap: .3em 1.7em;
+  list-style: none; font-size: .95em; line-height: 1.4; color: var(--ink-faint, var(--ink-dim));
+}
+.s-section .agenda li { padding-bottom: .3em; border-bottom: 2px solid transparent; }
+.s-section .agenda li.done { opacity: .55; }
+.s-section .agenda li.done::before { content: '✓ '; }
+.s-section .agenda li.now { color: var(--ink); font-weight: 700; border-bottom-color: var(--deep); }
+@media (max-width: 700px), (max-height: 500px) { .s-section .agenda { display: none; } }
+
+/* A pair task in an ASK line carries its own timer, on a row of its own. */
+.ask.has-timer { flex-wrap: wrap; max-width: 40em; }
+.ask .timer { flex-basis: 100%; margin-top: .7em; gap: .8em; }
+.ask .timer .clock { font-size: 2.6em; }
+.ask .timer .up { font-size: 1.05em; }
+
+/* "An example day" over the activity's sample list */
+.tl-label {
+  font-size: .8em; letter-spacing: .12em; text-transform: uppercase; font-weight: 600;
+  color: var(--ink-faint, var(--ink-dim)); margin-bottom: .9em;
+}
+
+/* Black screen */
+#blank { position: fixed; inset: 0; z-index: 95; background: #000; display: none; cursor: none; }
+#blank.on { display: block; }
+@media print { #blank { display: none !important; } }
+
+/* Presenter: the facilitator's cockpit */
+.pv .pv-time {
+  display: flex; flex-wrap: wrap; gap: .4em 1.4em; align-items: baseline;
+  margin: -.4em 0 1.1em; font-size: 1.1em; font-variant-numeric: tabular-nums; color: var(--card-dim);
+}
+.pv .pv-clock { color: var(--ink); font-weight: 600; }
+.pv .pv-pace.ok { color: #30d158; }
+.pv .pv-pace.early { color: #64d2ff; }
+.pv .pv-pace.late { color: #ff453a; font-weight: 700; }
+.pv .pv-total { margin-left: auto; font-size: .9em; }
+.pv .pv-timer { display: none; }
+.pv .pv-timer.on {
+  display: block; margin-bottom: .6em; font-size: 2.6em; font-weight: 700; line-height: 1.1;
+  color: var(--deep); font-variant-numeric: tabular-nums;
+}
+.pv .pv-timer span { font-size: .4em; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--card-dim); vertical-align: middle; margin-right: .4em; }
+.pv .pv-timer.done { color: #ff9f0a; }
+.pv .pv-blank { display: none; }
+.pv .pv-blank.on {
+  display: block; margin-bottom: 1em; padding: .55em .9em; border-radius: .4em;
+  background: #000; color: #fff; border: 1px solid rgba(255,255,255,.3); font-weight: 600;
+}
+.pv .pv-click {
+  margin-bottom: 1.4em; padding: .65em .95em; border-radius: .45em;
+  background: var(--bg); color: var(--card-dim); font-size: 1.12em; line-height: 1.45;
+}
+.pv .pv-click b { color: var(--ink); font-weight: 600; }
+.pv .pv-nav .quiet { margin-left: auto; color: var(--card-dim); }
+/* Something not yet revealed cannot be clicked: an invisible Start
+   button or word chip used to answer a stray tap. */
+.step:not(.shown) { pointer-events: none; }

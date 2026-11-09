@@ -94,6 +94,9 @@ window.ZH = Object.fromEntries([
    '「大腦不可能一天認真思考 3,000 次，所以它靠{{autopilot}}。」'],
 
   ['Your week: Monday → Sunday', '你的一週：星期一 → 星期日'],
+  ['An example day', '範例：某人的一天'],
+  ['The last click shows the task and a two-minute timer. Press Start; it chimes when time is up.',
+   '最後一下會出現任務和兩分鐘計時器。按「開始」；時間到會響一聲。'],
   ['Think about one normal week, Monday to Sunday.', '想一想普通的一週，從星期一到星期日。'],
   ['Write down three things you do every day without thinking.', '寫下三件你每天不用想就會做的事。'],
   ['Tell a partner. Is each one good for you — or not?', '跟夥伴分享：每一件對你有幫助嗎？還是沒有？'],

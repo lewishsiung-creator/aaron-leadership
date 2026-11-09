@@ -194,3 +194,14 @@ html[lang="zh-Hant"] .help-box h2 { font-style: normal; }
 .timer .up { font-family: var(--display); font-style: italic; font-weight: 900; text-transform: uppercase; font-size: 1.8em; }
 html[lang="zh-Hant"] .timer .up { font-style: normal; }
 #btn-help { border-radius: 0; }
+
+/* Workshop flow */
+.s-section .agenda {
+  font-family: var(--display); font-style: italic; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .03em; font-size: 1.15em;
+}
+.s-section .agenda li.now { color: var(--deep); border-bottom-width: 3px; }
+html[lang="zh-Hant"] .s-section .agenda { font-style: normal; text-transform: none; }
+.tl-label { font-family: var(--display); font-style: italic; font-weight: 800; font-size: .95em; color: var(--deep); }
+html[lang="zh-Hant"] .tl-label { font-style: normal; }
+.pv .pv-timer { font-family: var(--display); }

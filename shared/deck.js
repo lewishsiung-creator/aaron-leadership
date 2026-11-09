@@ -43,8 +43,13 @@
     helpRows: [['下一頁 / → / 空白鍵 / 點畫面', '下一步，再到下一頁'], ['上一頁 / ←', '上一步'],
                ['左右滑動', '在手機和平板上翻頁'], ['M', '跳到某一段'], ['Backspace', '回到剛才那一頁'],
                ['N', '在這個螢幕看備註'], ['P', '講者視窗（放在你的電腦）'], ['F', '全螢幕'],
+               ['B 或 .', '黑畫面：討論時讓大家看彼此，按任一鍵回來'],
                ['L', '中文 / English'], ['Esc', '關閉']],
-    helpNote: '重新整理會停在同一頁。點有底線的詞可以看解釋。'
+    helpNote: '重新整理會停在同一頁。點有底線的詞可以看解釋。',
+    nextClick: '下一下：', nextSlide: '換到下一頁', answer: '公布答案', allAtOnce: '整頁一次出現',
+    clockWait: '離開第 1 頁時開始計時', elapsed: x => `已過 ${x}`, plan: (a, b) => `預計第 ${a}–${b} 分鐘`, total: m => `全長約 ${m} 分鐘`,
+    onTime: '進度剛好', behind: m => `慢了 ${m} 分鐘`, ahead: m => `快了 ${m} 分鐘`,
+    timer: '計時器', blank: '畫面是黑的 · 按 B 回來', blankBtn: '黑畫面 (B)', example: '範例'
   } : {
     simple: 'In simple words', ask: 'ASK', watch: 'WATCH FOR',
     question: (n, of) => `Question ${n} of ${of}`, reveal: 'Click when the class has answered',
@@ -62,9 +67,30 @@
     helpRows: [['下一頁 / → / Space / tap', 'next step, then next slide'], ['上一頁 / ←', 'back one step'],
                ['swipe left / right', 'turn the page on a phone or tablet'], ['M', 'jump to a section'],
                ['Backspace', 'return to where you jumped from'], ['N', 'speaker notes on this screen'],
-               ['P', 'presenter window (for your laptop)'], ['F', 'full screen'], ['L', '中文 / English'], ['Esc', 'close']],
-    helpNote: 'A refresh keeps your place. Tap an underlined word for its meaning.'
+               ['P', 'presenter window (for your laptop)'], ['F', 'full screen'],
+               ['B or .', 'black screen while people talk — any key brings it back'],
+               ['L', '中文 / English'], ['Esc', 'close']],
+    helpNote: 'A refresh keeps your place. Tap an underlined word for its meaning.',
+    nextClick: 'Next click: ', nextSlide: 'next slide', answer: 'shows the answer', allAtOnce: 'shows the whole slide',
+    clockWait: 'The clock starts when you leave slide 1', elapsed: x => `${x} elapsed`, plan: (a, b) => `plan ${a}–${b} min`, total: m => `about ${m} min in all`,
+    onTime: 'on time', behind: m => `${m} min behind`, ahead: m => `${m} min ahead`,
+    timer: 'Timer', blank: 'The screen is black · press B to bring it back', blankBtn: 'Black screen (B)', example: 'Example'
   };
+
+  /* ---------- the time plan ----------
+     Each slide's suggested minutes come from the lesson's practice.js
+     (the same numbers Aaron rehearses with), looked up by the slide's
+     English title — so this runs before the Chinese swap. A lesson with
+     no practice.js simply has no plan, and the presenter shows only the
+     clock. */
+  const PLAN = SLIDES.map(s => {
+    const key = s.title || (s.type === 'quiz' ? 'Q' + s.n : '');
+    const sc = (typeof SCRIPT !== 'undefined') && SCRIPT[key];
+    return sc ? sc.mins : 0;
+  });
+  const PLAN_END = [];
+  PLAN.reduce((a, m, i) => (PLAN_END[i] = a + m), 0);
+  const PLAN_TOTAL = PLAN_END.length ? PLAN_END[PLAN_END.length - 1] : 0;
 
   if (ZHMODE) {
     const ZH = window.ZH || {};
@@ -182,24 +208,38 @@
     const root = el('div', 'pv');
     document.body.appendChild(root);
 
-    const start = Date.now();
-    let idx = 0, step = 0;
+    let idx = 0, step = 0, st = {};
+    const mmss = ms => { const s = Math.max(0, Math.round(ms / 1000));
+      return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
 
+    /* draw() rebuilds the page when the slide or step changes; tick()
+       only rewrites the clocks, once a second, so the notes never jump
+       back to the top while she is reading them. */
     function draw() {
       const s = SLIDES[idx], nx = SLIDES[idx + 1];
-      const mins = Math.floor((Date.now() - start) / 60000);
       const notes = (s.notes || []).map(t => {
         let cls = '';
-        if (/^(TEACHER|LEWIS|NOTE|CORRECTED)/.test(t) || /^TEACHER/.test(t)) cls = 'teach';
+        if (/^(TEACHER|LEWIS|NOTE|CORRECTED)/.test(t)) cls = 'teach';
         if (/^ASK/.test(t)) cls = 'ask';
         return `<p class="${cls}">${chips(t)}</p>`;
       }).join('');
+      const more = step < stepsFor(s);
+      const nextLine = more
+        ? `${UI.nextClick}<b>${st.nextStep ? plainText(st.nextStep) : (s.type === 'quiz' ? UI.answer : '…')}</b>`
+        : `${UI.nextClick}${UI.nextSlide}${nx ? ` · <b>${titleOf(nx)}</b>` : ''}`;
 
       root.innerHTML = `
         <div class="pv-top">
           <div class="where">${idx + 1} / ${SLIDES.length} · ${titleOf(s)}</div>
-          <div class="clock">${UI.step(step, stepsFor(s))} · ${UI.mins(mins)}</div>
+          <div class="clock">${UI.step(step, stepsFor(s))}</div>
         </div>
+        <div class="pv-time">
+          <span class="pv-clock"></span><span class="pv-pace"></span>
+          ${PLAN_TOTAL ? `<span class="pv-total">${UI.total(Math.round(PLAN_TOTAL))}</span>` : ''}
+        </div>
+        <div class="pv-timer"></div>
+        <div class="pv-blank">${UI.blank}</div>
+        <div class="pv-click">${nextLine}</div>
         <h3>${UI.say}</h3>
         <div class="notes">${notes || '<p>—</p>'}</div>
         <div class="next"><div>${UI.nextUp}</div>
@@ -207,10 +247,42 @@
         <div class="pv-nav">
           <button data-go="prev">${UI.back}</button>
           <button data-go="next">${UI.fwd}</button>
+          <button data-go="blank" class="quiet">${UI.blankBtn}</button>
         </div>`;
       root.querySelectorAll('[data-go]').forEach(b => {
         b.onclick = () => post({ nav: b.dataset.go });
       });
+      tick();
+    }
+
+    function tick() {
+      const clock = root.querySelector('.pv-clock');
+      if (!clock) return;
+      const pace = root.querySelector('.pv-pace');
+      if (!st.startedAt) {
+        clock.textContent = UI.clockWait; pace.textContent = ''; pace.className = 'pv-pace';
+      } else {
+        const ms = Date.now() - st.startedAt, m = ms / 60000;
+        clock.textContent = UI.elapsed(mmss(ms));
+        if (PLAN[idx]) {
+          const from = PLAN_END[idx] - PLAN[idx], to = PLAN_END[idx];
+          const fmt = x => +x.toFixed(1);
+          let txt = UI.onTime, cls = 'ok';
+          if (m > to + 0.5) { txt = UI.behind(Math.round(m - to) || 1); cls = 'late'; }
+          else if (m < from - 0.5) { txt = UI.ahead(Math.round(from - m) || 1); cls = 'early'; }
+          pace.textContent = `${UI.plan(fmt(from), fmt(to))} · ${txt}`;
+          pace.className = 'pv-pace ' + cls;
+        } else { pace.textContent = ''; pace.className = 'pv-pace'; }
+      }
+      const tb = root.querySelector('.pv-timer');
+      if (st.timerEnd) {
+        tb.className = 'pv-timer on';
+        tb.innerHTML = `<span>${UI.timer}</span> ${mmss(st.timerEnd - Date.now())}`;
+      } else if (st.timerDone) {
+        tb.className = 'pv-timer on done';
+        tb.innerHTML = `<span>${UI.timer}</span> ${UI.up}`;
+      } else tb.className = 'pv-timer';
+      root.querySelector('.pv-blank').classList.toggle('on', !!st.blank);
     }
 
     const bc = ('BroadcastChannel' in window) ? new BroadcastChannel(CH) : null;
@@ -220,7 +292,9 @@
     }
     function receive(d) {
       if (!d || d.nav) return;
-      idx = d.idx; step = d.step; draw();
+      const redraw = d.idx !== idx || d.step !== step || d.nextStep !== st.nextStep;
+      idx = d.idx; step = d.step; st = d;
+      redraw ? draw() : tick();
     }
     if (bc) bc.onmessage = e => receive(e.data);
     window.addEventListener('storage', e => {
@@ -228,13 +302,14 @@
     });
 
     const saved = localStorage.getItem(CH + ':state');
-    if (saved) receive(JSON.parse(saved));
+    if (saved) { st = JSON.parse(saved); idx = st.idx || 0; step = st.step || 0; }
     draw();
-    setInterval(draw, 20000);
+    setInterval(tick, 1000);
 
     document.addEventListener('keydown', e => {
-      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); post({ nav: 'next' }); }
-      if (e.key === 'ArrowLeft') { e.preventDefault(); post({ nav: 'prev' }); }
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); post({ nav: 'next' }); }
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); post({ nav: 'prev' }); }
+      if (e.key === 'b' || e.key === 'B' || e.key === '.') post({ nav: 'blank' });
     });
     return;
   }
@@ -253,6 +328,24 @@
   const navNext = document.getElementById('nav-next');
 
   let idx = 0, step = 0, jumpFrom = null, presenterWin = null;
+  /* A clock left over from another day is not this workshop's. */
+  let startedAt = +(localStorage.getItem(CH + ':started') || 0) || null;
+  if (startedAt && Date.now() - startedAt > 6 * 3600e3) startedAt = null;
+
+  /* ---------- progress, in sections ----------
+     One segment per section, so the room can see how much of today is
+     left, not just how many slides. */
+  progress.classList.add('seg');
+  progress.innerHTML = (SECTIONS.length ? SECTIONS : [{ start: 0 }]).map((sec, k, all) => {
+    const end = all[k + 1] ? all[k + 1].start : SLIDES.length;
+    return `<b style="flex-grow:${end - sec.start}" data-a="${sec.start}" data-z="${end}"><i></i></b>`;
+  }).join('');
+  function paintProgress() {
+    progress.querySelectorAll('b').forEach(b => {
+      const a = +b.dataset.a, z = +b.dataset.z;
+      b.firstChild.style.width = Math.max(0, Math.min(1, (idx + 1 - a) / (z - a))) * 100 + '%';
+    });
+  }
 
   /* Scale the whole deck off the viewport so it reads from the back row. */
   function fit() {
@@ -275,9 +368,29 @@
     return n;
   });
 
-  function askBlock(text, stepped) {
-    return `<div class="ask ${stepped ? 'step' : ''}" ${stepped ? 'data-step="ask"' : ''}>
-      <span class="tag">${UI.ask}</span><span class="q">${chips(text)}</span></div>`;
+  /* A countdown. Any slide where the room talks to each other gets one:
+     an activity, or a pair task in an ASK line (`minutes` on the slide). */
+  function timerHTML(mins) {
+    return `<div class="timer" data-mins="${mins}">
+      <div class="clock">${String(mins).padStart(2, '0')}:00</div><div class="up">${UI.up}</div>
+      <button data-timer="start" class="go">${UI.start}</button>
+      <button data-timer="reset">${UI.reset}</button>
+    </div>`;
+  }
+  function askBlock(text, stepped, mins) {
+    return `<div class="ask ${stepped ? 'step' : ''} ${mins ? 'has-timer' : ''}" ${stepped ? 'data-step="ask"' : ''}>
+      <span class="tag">${UI.ask}</span><span class="q">${chips(text)}</span>${mins ? timerHTML(mins) : ''}</div>`;
+  }
+
+  /* Where the room is in today's workshop: every section divider carries
+     the whole agenda, with the sections done, the one starting now, and
+     the ones to come. */
+  function agenda(i) {
+    if (SECTIONS.length < 3) return '';
+    let now = 0;
+    SECTIONS.forEach((sec, k) => { if (sec.start <= i) now = k; });
+    return `<ol class="agenda" aria-label="${UI.jump}">${SECTIONS.map((sec, k) =>
+      `<li class="${k < now ? 'done' : k === now ? 'now' : ''}">${sec.title}</li>`).join('')}</ol>`;
   }
 
   function render(s, i) {
@@ -292,7 +405,7 @@
         return `<div class="big">${s.word}</div>`;
 
       case 'section':
-        return `<h1>${chips(s.title)}</h1>
+        return `${agenda(i)}<h1>${chips(s.title)}</h1>
           ${s.sub ? `<div class="sub">${chips(s.sub)}</div>` : ''}
           ${s.ask ? askBlock(s.ask, true) : ''}`;
 
@@ -305,7 +418,7 @@
               <div class="head">${chips(it.head)}</div>
               ${it.body ? `<div class="body">${chips(it.body)}</div>` : ''}
             </li>`).join('')}</ul>
-          ${s.ask ? askBlock(s.ask, true) : ''}`;
+          ${s.ask ? askBlock(s.ask, true, s.minutes) : ''}`;
 
       /* `src` is optional — a photograph of the document the quote comes
          from. With one, the slide splits into two columns. */
@@ -400,13 +513,9 @@
             ${s.questions ? `<ul class="q-list">${s.questions.map((q, k) =>
               `<li class="step" data-step="${k}">${chips(q)}</li>`).join('')}</ul>` : ''}
             ${s.ask ? askBlock(s.ask, false) : ''}
-            <div class="timer" data-mins="${s.minutes}">
-              <div class="clock">${String(s.minutes).padStart(2, '0')}:00</div><div class="up">${UI.up}</div>
-              <button data-timer="start" class="go">${UI.start}</button>
-              <button data-timer="reset">${UI.reset}</button>
-            </div>
+            ${timerHTML(s.minutes)}
           </div>
-          <div class="right">${s.timeline ? `<ul class="tl">${s.timeline.map(([y, m]) =>
+          <div class="right">${s.timelineLabel ? `<div class="tl-label">${chips(s.timelineLabel)}</div>` : ''}${s.timeline ? `<ul class="tl">${s.timeline.map(([y, m]) =>
             `<li><span class="yr">${y}</span><span>${m}</span></li>`).join('')}</ul>` : ''}</div>`;
 
       /* A video sits behind a facade until she clicks it: seven YouTube
@@ -536,11 +645,7 @@
           <div class="right">
             <ul class="q-list">${s.questions.map((q, k) =>
               `<li class="step" data-step="${k}">${chips(q)}</li>`).join('')}</ul>
-            <div class="timer" data-mins="${s.minutes}">
-              <div class="clock">${String(s.minutes).padStart(2, '0')}:00</div><div class="up">${UI.up}</div>
-              <button data-timer="start" class="go">${UI.start}</button>
-              <button data-timer="reset">${UI.reset}</button>
-            </div>
+            ${timerHTML(s.minutes)}
           </div>`;
 
       case 'quiz':
@@ -693,7 +798,14 @@
     if (s.type === 'quiz')  node.classList.toggle('revealed', step >= 1);
     if (s.type === 'match') node.classList.toggle('revealed', step >= 1);
 
-    progress.style.width = ((idx + 1) / SLIDES.length * 100) + '%';
+    paintProgress();
+
+    /* The workshop clock starts when she leaves the title slide, and
+       going back to it starts the clock again — so a rehearsal in the
+       morning does not count against the afternoon. */
+    if (idx === 0) startedAt = null;
+    else if (!startedAt) startedAt = Date.now();
+    try { localStorage.setItem(CH + ':started', startedAt ? String(startedAt) : ''); } catch (e) {}
     counter.setAttribute('aria-live', 'polite');
     counter.textContent = (idx + 1) + ' / ' + SLIDES.length;
 
@@ -826,12 +938,37 @@
       clock.textContent = '00:00';
       box.classList.remove('running'); box.classList.add('done');
       st.running = false;
+      chime();
+      sync();
       return;
     }
     const m = Math.floor(left / 60000), sec = Math.floor(left % 60000 / 1000);
     clock.textContent = String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
   }
   setInterval(() => document.querySelectorAll('.timer').forEach(tick), 250);
+
+  /* Time's up, out loud: she is facing the room, not the screen. Two soft
+     notes, made in the browser — no sound file. The audio is switched on
+     by the Start press, because browsers only allow sound after a tap. */
+  let actx = null;
+  function audioOn() {
+    try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); actx.resume(); } catch (e) {}
+  }
+  function chime() {
+    if (!actx) return;
+    try {
+      const t0 = actx.currentTime;
+      [880, 1318.5].forEach((f, k) => {
+        const o = actx.createOscillator(), g = actx.createGain(), t = t0 + k * 0.2;
+        o.type = 'sine'; o.frequency.value = f;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(0.22, t + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 1.4);
+        o.connect(g); g.connect(actx.destination);
+        o.start(t); o.stop(t + 1.5);
+      });
+    } catch (e) {}
+  }
 
   /* ---------- matching board ----------
      Pairs live only in the DOM. Nothing is stored, and a reload clears it:
@@ -914,20 +1051,41 @@
 
   /* ---------- presenter sync ---------- */
   const bc = ('BroadcastChannel' in window) ? new BroadcastChannel(CH) : null;
+  /* Everything the presenter window shows: where she is, what the next
+     click will put up, the workshop clock, a running timer, a black screen. */
+  function nextStepText() {
+    const s = SLIDES[idx];
+    if (step >= stepsFor(s)) return '';
+    if (s.oneClick) return UI.allAtOnce;
+    const n = nodes[idx].querySelectorAll('.step')[step];
+    if (!n) return '';
+    const q = n.querySelector('.ask .q, .q');
+    const t = n.matches('.blank') ? '“' + n.textContent.trim() + '”'
+            : n.matches('.ask') && q ? UI.ask + ' · ' + q.innerText.trim()
+            : n.innerText.replace(/\s+/g, ' ').trim();
+    return t.length > 90 ? t.slice(0, 88) + '…' : t;
+  }
+  function timerState() {
+    const box = nodes[idx].querySelector('.timer');
+    const st = box && timers.get(box);
+    return { timerEnd: st && st.running ? st.end : null, timerDone: !!(box && box.classList.contains('done')) };
+  }
   function sync() {
-    const state = { idx, step };
+    const state = { idx, step, nextStep: nextStepText(), startedAt, blank: blank.classList.contains('on'), ...timerState() };
     localStorage.setItem(CH + ':state', JSON.stringify(state));
     if (bc) bc.postMessage(state);
   }
   if (bc) bc.onmessage = e => {
     if (e.data && e.data.nav === 'next') next();
     if (e.data && e.data.nav === 'prev') prev();
+    if (e.data && e.data.nav === 'blank') toggleBlank();
   };
   window.addEventListener('storage', e => {
     if (e.key === CH + ':cmd') {
       const d = JSON.parse(e.newValue);
       if (d.nav === 'next') next();
       if (d.nav === 'prev') prev();
+      if (d.nav === 'blank') toggleBlank();
     }
   });
   function openPresenter() {
@@ -940,7 +1098,20 @@
   }
 
   /* ---------- input ---------- */
+  /* ---------- black screen (B or .) ----------
+     For the talking parts: the room looks at each other, not at the
+     wall. Most presentation clickers have a button that sends B or a
+     full stop. Any key or click brings the slide back without moving on. */
+  const blank = el('div', '', '');
+  blank.id = 'blank';
+  document.body.appendChild(blank);
+  function toggleBlank(on) {
+    blank.classList.toggle('on', on);
+    sync();
+  }
+
   document.addEventListener('click', e => {
+    if (blank.classList.contains('on')) { toggleBlank(false); return; }
     const chip = e.target.closest('.chip');
     if (chip) { e.stopPropagation(); openChip(chip, chip.dataset.term); return; }
     if (chipcard.contains(e.target)) return;
@@ -1051,6 +1222,7 @@
       const box = tb.closest('.timer');
       const mins = +box.dataset.mins;
       if (tb.dataset.timer === 'start') {
+        audioOn();
         timers.set(box, { running: true, end: Date.now() + mins * 60000 });
         box.classList.add('running'); box.classList.remove('done');
       } else {
@@ -1058,8 +1230,11 @@
         box.classList.remove('running', 'done');
         box.querySelector('.clock').textContent = String(mins).padStart(2, '0') + ':00';
       }
+      sync();
       return;
     }
+    /* A missed tap near the timer should not turn the page mid-activity. */
+    if (e.target.closest('.timer')) return;
 
     if (menu.classList.contains('on')) return;
     if (e.target.closest('#hud') || e.target.closest('#nav')) return;
@@ -1077,6 +1252,11 @@
       return;
     }
     const k = e.key;
+    if (k === 'b' || k === 'B' || k === '.') { toggleBlank(); return; }
+    if (blank.classList.contains('on')) {
+      if (!['Shift', 'Control', 'Alt', 'Meta'].includes(k)) { e.preventDefault(); toggleBlank(false); }
+      return;
+    }
     if (k === 'Escape') {
       closeMenu(); closeChip(); closeZoom(); toggleHelp(false); peek.classList.remove('on'); return;
     }

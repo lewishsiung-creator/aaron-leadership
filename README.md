@@ -109,6 +109,7 @@ copyrighted and are not used here.
 | `N` | Speaker notes on this screen |
 | `P` | Presenter window — laptop for you, deck on the projector |
 | `F` | Fullscreen |
+| `B` or `.` | Black screen while people talk; any key or click brings it back (most clickers have a button for this) |
 
 The work and sport versions use separate presenter channels, so having both
 open never makes one drive the other.
@@ -149,6 +150,39 @@ with no entry shows "講稿還沒寫". Printing the page shows all the Chinese.
 - **Today's words** now shows its terms as cards (they used to run together
   as small text — the `terms` type had no styling of its own).
 - **Homepage**: each version's button is a small sample of that deck's look.
+
+## Workshop flow (9 November 2026)
+
+A pass over the deck as a *workshop*, not a talk: the room should always
+know where it is, every talking task should be timed, and the facilitator
+should always know whether they are on time.
+
+- **Agenda on every section divider**: all of today's sections in a row —
+  done (✓, dimmed), now (highlighted), to come. Built from the `sec`
+  markers, so it updates itself. Hidden on phones.
+- **Progress bar in sections**: one segment per section, so the room sees
+  how much of today is left.
+- **Every pair task has a timer**: an ASK line takes `minutes` and shows a
+  countdown under it (Lesson 1: *Two questions*, 2 minutes). A timer, and
+  anything not yet revealed, no longer answers a stray tap.
+- **Time's up chimes**: two soft notes made in the browser (no sound file),
+  because the facilitator is facing the room. Sound is allowed by the Start
+  press.
+- **Black screen** with `B` or `.` (see the key table).
+- **The activity's sample list is labelled** *An example day / 範例* — the
+  room was meant to see it as an example, not as their own answers.
+- **Presenter window is now the facilitator's cockpit**:
+  - a workshop clock that starts when you leave slide 1 (going back to
+    slide 1 restarts it, so a rehearsal doesn't count);
+  - the plan for this slide and whether you are *on time / N min behind /
+    N min ahead* — the minutes come from `practice.js`, the same numbers
+    Aaron rehearses with, so a lesson's deck pages load `../practice.js`;
+  - the running timer, mirrored live, and *Time's up*;
+  - **Next click:** what the next click will put on screen (the next
+    number, the ASK, the answer, or the next slide);
+  - a *black screen* button and indicator.
+  The clocks update every second without redrawing the notes, so the notes
+  never jump back to the top while being read.
 
 ## Lesson 1 — corrections to the handout
 

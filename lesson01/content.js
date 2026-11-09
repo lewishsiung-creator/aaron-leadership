@@ -139,8 +139,10 @@ const SLIDES_ALL = [
         body: 'Not because of your job title — because of how you act every day.' }
     ],
     ask: 'Talk to a partner. One minute each. Be honest!',
+    minutes: 2,
     notes: [
       'Read each question slowly. Give people a moment after each one.',
+      'The last click shows the task and a two-minute timer. Press Start; it chimes when time is up.',
       v('Then: “Talk to the person next to you. One minute each.”',
         'Then: “Talk to the person next to you. One minute each.” Athletes usually answer fast — push for an example.'),
       'NOTE 手寫稿上是 “Do people want to be (like) you?”：要寫 be like you（想成為像你這樣的人）；be you 意思變成「想變成你本人」。',
@@ -225,6 +227,7 @@ const SLIDES_ALL = [
        'What do you do after a mistake in a game?',
        'What do you do with your phone before sleep?']),
     minutes: 3,
+    timelineLabel: 'An example day',
     timeline: v(
       [['07:00', 'Phone in bed'], ['09:00', 'Coffee, then email'], ['12:30', 'Same lunch, same place'],
        ['15:00', 'Say “yes” to every meeting'], ['23:30', 'Phone in bed — again']],
