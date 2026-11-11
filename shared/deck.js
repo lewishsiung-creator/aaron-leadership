@@ -44,13 +44,18 @@
                ['左右滑動', '在手機和平板上翻頁'], ['M', '跳到某一段'], ['Backspace', '回到剛才那一頁'],
                ['N', '在這個螢幕看備註'], ['P', '講者視窗（放在你的電腦）'], ['F', '全螢幕'],
                ['B 或 .', '黑畫面：討論時讓大家看彼此，按任一鍵回來'],
+               ['R', '重點複習：給學員的 QR code、連結和 PDF'],
                ['L', '中文 / English'], ['Esc', '關閉']],
     helpNote: '重新整理會停在同一頁。點有底線的詞可以看解釋。',
     nextClick: '下一下：', nextSlide: '換到下一頁', answer: '公布答案', allAtOnce: '整頁一次出現',
     clockWait: '離開第 1 頁時開始計時', elapsed: x => `已過 ${x}`, plan: (a, b) => `預計第 ${a}–${b} 分鐘`, total: m => `全長約 ${m} 分鐘`,
     onTime: '進度剛好', behind: m => `慢了 ${m} 分鐘`, ahead: m => `快了 ${m} 分鐘`,
     timer: '計時器', blank: '畫面是黑的 · 按 B 回來', blankBtn: '黑畫面 (B)', example: '範例',
-    toDeck: '← 回到簡報', jumpBtn: '跳到…', jumpClose: '收起目錄'
+    toDeck: '← 回到簡報', jumpBtn: '跳到…', jumpClose: '收起目錄',
+    review: '重點複習', reviewHead: '重點複習 · 給學員',
+    reviewText: '請學員用手機掃 QR code，或把連結傳給他們：今天的重點、關鍵詞、自我檢查，還可以下載 PDF。',
+    copy: '複製連結', copied: '已複製', share: '分享', open: '打開頁面', pdf: '下載 PDF', close: '關閉',
+    qrOffline: '沒有網路，QR code 出不來；請用上面的連結。'
   } : {
     simple: 'In simple words', ask: 'ASK', watch: 'WATCH FOR',
     question: (n, of) => `Question ${n} of ${of}`, reveal: 'Click when the class has answered',
@@ -70,13 +75,18 @@
                ['Backspace', 'return to where you jumped from'], ['N', 'speaker notes on this screen'],
                ['P', 'presenter window (for your laptop)'], ['F', 'full screen'],
                ['B or .', 'black screen while people talk — any key brings it back'],
+               ['R', 'review: QR code, link and PDF for the class'],
                ['L', '中文 / English'], ['Esc', 'close']],
     helpNote: 'A refresh keeps your place. Tap an underlined word for its meaning.',
     nextClick: 'Next click: ', nextSlide: 'next slide', answer: 'shows the answer', allAtOnce: 'shows the whole slide',
     clockWait: 'The clock starts when you leave slide 1', elapsed: x => `${x} elapsed`, plan: (a, b) => `plan ${a}–${b} min`, total: m => `about ${m} min in all`,
     onTime: 'on time', behind: m => `${m} min behind`, ahead: m => `${m} min ahead`,
     timer: 'Timer', blank: 'The screen is black · press B to bring it back', blankBtn: 'Black screen (B)', example: 'Example',
-    toDeck: '← Back to the slides', jumpBtn: 'Jump to…', jumpClose: 'Close the list'
+    toDeck: '← Back to the slides', jumpBtn: 'Jump to…', jumpClose: 'Close the list',
+    review: 'review', reviewHead: 'Review · for the class',
+    reviewText: 'People scan the code with their phone, or you send them the link: today’s key points, words and a self-check, with a PDF to download.',
+    copy: 'Copy link', copied: 'Copied', share: 'Share', open: 'Open the page', pdf: 'Download PDF', close: 'Close',
+    qrOffline: 'No internet, so no QR code — use the link above.'
   };
 
   /* ---------- the time plan ----------
@@ -1172,6 +1182,10 @@
 
   document.addEventListener('click', e => {
     if (blank.classList.contains('on')) { toggleBlank(false); return; }
+    if (sharePanel && sharePanel.classList.contains('on')) {
+      if (!e.target.closest('.share-box') || e.target.closest('[data-share="close"]')) toggleShare(false);
+      return;
+    }
     const chip = e.target.closest('.chip');
     if (chip) { e.stopPropagation(); openChip(chip, chip.dataset.term); return; }
     if (chipcard.contains(e.target)) return;
@@ -1318,8 +1332,10 @@
       return;
     }
     if (k === 'Escape') {
-      closeMenu(); closeChip(); closeZoom(); toggleHelp(false); peek.classList.remove('on'); return;
+      closeMenu(); closeChip(); closeZoom(); toggleHelp(false); toggleShare(false); peek.classList.remove('on'); return;
     }
+    /* With the review panel up, keys belong to it (Tab, Enter on its buttons). */
+    if (sharePanel && sharePanel.classList.contains('on')) return;
     if (k === 'ArrowRight' || k === ' ' || k === 'PageDown') { e.preventDefault(); next(); return; }
     if (k === 'ArrowLeft' || k === 'PageUp') { e.preventDefault(); prev(); return; }
     if (k === 'Home') { show(0, 0); return; }
@@ -1334,6 +1350,7 @@
     if (lower === 'n') { peek.classList.toggle('on'); if (peek.classList.contains('on')) drawPeek(); return; }
     if (lower === 'p') { openPresenter(); return; }
     if (lower === 'l') { switchLang(here()); return; }
+    if (lower === 'r' && sharePanel) { toggleShare(true); return; }
     if (k === '?') { toggleHelp(!help.classList.contains('on')); return; }
     if (lower === 'f') {
       if (document.fullscreenElement) document.exitFullscreen();
@@ -1399,6 +1416,81 @@
     fb.onclick = e => { e.stopPropagation(); toggleFull(); };
     hud.insertBefore(fb, countEl);
   }
+  /* ---------- 重點複習: the review page, for the class ----------
+     Only for a lesson that has REVIEW in its content. The panel is meant
+     to go up on the projector at the end: a QR code people scan with their
+     phone, the link, and the PDF. The QR code comes from a small library
+     on cdnjs, loaded the first time the panel opens; offline, the panel
+     still gives the link. */
+  let sharePanel = null;
+  let drawQR = () => {};
+  function toggleShare(on) {
+    if (!sharePanel) return;
+    sharePanel.classList.toggle('on', on);
+    if (on) drawQR();
+  }
+  if (typeof REVIEW !== 'undefined') {
+    const parts = location.pathname.split('/').filter(Boolean);       /* [lesson01, work] */
+    const dir = parts.length >= 2 ? parts[parts.length - 2] : 'lesson01';
+    const aud = window.AUDIENCE === 'sport' ? 'sport' : 'work';
+    const base = location.origin + '/' + parts.slice(0, -2).map(p => p + '/').join('');
+    const reviewUrl = base + dir + '/review/?v=' + aud;
+    const pdfUrl = base + dir + '/review/' + dir + '-review-' + aud + '.pdf';
+    const shown = reviewUrl.replace(/^https?:\/\//, '');
+
+    sharePanel = el('div', '', `<div class="share-box" role="dialog" aria-label="${UI.reviewHead}">
+        <h2>${UI.reviewHead}</h2>
+        <p class="share-text">${UI.reviewText}</p>
+        <div class="share-qr"></div>
+        <div class="share-url">${shown}</div>
+        <div class="share-btns">
+          <button type="button" class="go" data-share="copy">${UI.copy}</button>
+          ${navigator.share ? `<button type="button" data-share="share">${UI.share}</button>` : ''}
+          <a href="${reviewUrl}" target="_blank" rel="noopener">${UI.open}</a>
+          <a href="${pdfUrl}" download>${UI.pdf}</a>
+          <button type="button" class="quiet" data-share="close">${UI.close}</button>
+        </div></div>`);
+    sharePanel.id = 'share';
+    document.body.appendChild(sharePanel);
+
+    sharePanel.addEventListener('click', async e => {
+      const b = e.target.closest('[data-share]');
+      if (!b) return;
+      if (b.dataset.share === 'copy') {
+        try { await navigator.clipboard.writeText(reviewUrl); b.textContent = UI.copied; }
+        catch (err) { b.textContent = shown; }
+        setTimeout(() => { b.textContent = UI.copy; }, 2000);
+      }
+      if (b.dataset.share === 'share') {
+        try { await navigator.share({ title: UI.review, url: reviewUrl }); } catch (err) {}
+      }
+    });
+
+    let qrDone = false;
+    drawQR = function () {
+      if (qrDone) return;
+      const box = sharePanel.querySelector('.share-qr');
+      const make = () => {
+        try {
+          new QRCode(box, { text: reviewUrl, width: 220, height: 220,
+            colorDark: '#000', colorLight: '#fff', correctLevel: QRCode.CorrectLevel.M });
+          qrDone = true;
+        } catch (err) { box.textContent = UI.qrOffline; }
+      };
+      if (window.QRCode) { make(); return; }
+      const sc = document.createElement('script');
+      sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+      sc.onload = make;
+      sc.onerror = () => { box.textContent = UI.qrOffline; box.classList.add('off'); };
+      document.head.appendChild(sc);
+    };
+
+    const rb = el('button', '', UI.review);
+    rb.id = 'btn-review'; rb.title = UI.reviewHead + ' (R)';
+    rb.onclick = e => { e.stopPropagation(); toggleShare(true); };
+    hud.insertBefore(rb, document.getElementById('btn-menu'));
+  }
+
   const hb = el('button', '', '?');
   hb.id = 'btn-help'; hb.title = UI.help;
   hb.onclick = e => { e.stopPropagation(); toggleHelp(!help.classList.contains('on')); };

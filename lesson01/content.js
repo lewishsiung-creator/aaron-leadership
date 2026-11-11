@@ -432,3 +432,36 @@ const SLIDES_ALL = [
 const SLIDES = SLIDES_ALL.filter(s => !s.only || s.only === AUD);
 const SECTIONS = [];
 SLIDES.forEach((s, i) => { if (s.sec) SECTIONS.push({ ...s.sec, start: i }); });
+
+/* ------------------------------------------------------------------
+   重點複習 — the review page students get after the workshop
+   (lesson01/review/?v=work|sport, and a PDF of it).
+
+   Always both languages, English first: the students are A2, and a
+   handout they keep should carry the Chinese with every line. The words
+   and the quiz come from the slides themselves (GLOSSARY, the terms
+   slide, the quiz slides); only these points are written for the review.
+   Kept to what the slides say — the unsourced 3,000 / 80% figures are
+   left out of a handout people will keep.
+   ------------------------------------------------------------------ */
+const REVIEW = {
+  points: [
+    { en: 'A habit is something you do again and again — often without thinking. Many things you do every day happen on autopilot.',
+      zh: '習慣就是一再重複、常常不用想就會做的事。我們每天做的很多事，都是在「自動駕駛」。' },
+    { en: 'Every habit is formed by practice. Good habits and bad habits are made the same way.',
+      zh: '每個習慣都是練出來的。好習慣和壞習慣，形成的方式一模一樣。' },
+    { en: 'When you do something again and again, your brain wraps that network in myelin. The signal goes faster, so the action gets easier.',
+      zh: '一件事一再重複，大腦會在那條神經網路外面包上髓鞘；訊號傳得更快，動作就越來越輕鬆。' },
+    { en: 'The good news: a habit makes things automatic. The bad news: a habit can make you rigid.',
+      zh: '好消息：習慣讓事情自動化。壞消息：習慣也可能讓人僵化。' },
+    { en: 'Your brain can change at any age. Like Arthur: small steps, many times, every day.',
+      zh: '大腦在任何年紀都能改變。就像 Arthur：一小步、做很多次、每天做。' }
+  ],
+  tryThis: v(
+    { en: 'This week, notice your autopilot. Write down three things you do every day without thinking — at work, at home, with your phone. Is each one helping you?',
+      zh: '這一週，留意自己的「自動駕駛」：寫下三件每天不用想就會做的事——在工作上、在家裡、拿起手機的時候。每一件對你有幫助嗎？' },
+    { en: 'This week, notice your autopilot. Write down three things you do every day without thinking — before training, after a mistake, with your phone. Is each one helping you?',
+      zh: '這一週，留意自己的「自動駕駛」：寫下三件每天不用想就會做的事——練習前、失誤後、拿起手機的時候。每一件對你有幫助嗎？' }),
+  next: { en: 'Next time: how to find the habits that don’t help you.',
+          zh: '下一次：發現自己「無效習慣」的方法。' }
+};

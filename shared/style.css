@@ -1601,3 +1601,41 @@ html[lang="zh-Hant"] .weeks .ver a.v-sport { font-style: normal; }
 }
 .pv .pv-jump button:hover { background: var(--card); }
 .pv .pv-jump button.here { border-left-color: var(--deep); background: var(--card); }
+
+/* 重點複習 panel: goes up on the projector, so the QR code is large and
+   on white whatever the theme. */
+#share {
+  position: fixed; inset: 0; z-index: 80; display: none;
+  align-items: center; justify-content: center; background: rgba(0,0,0,.7); padding: 3vh 4vw;
+}
+#share.on { display: flex; }
+.share-box {
+  background: var(--card); color: var(--ink); border-radius: .9em; font-size: 16px;
+  padding: 1.6em 1.8em; max-width: 34em; width: 100%; max-height: 94vh; overflow-y: auto;
+  text-align: center; box-shadow: 0 1.5em 4em rgba(0,0,0,.5);
+}
+.share-box h2 { font-size: 1.6em; margin-bottom: .4em; }
+.share-text { color: var(--card-dim); line-height: 1.5; margin-bottom: 1.1em; }
+.share-qr {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #fff; padding: 14px; border-radius: .5em; min-width: 248px; min-height: 248px;
+}
+.share-qr img, .share-qr canvas { display: block; width: 220px; height: 220px; }
+.share-qr.off { min-height: 0; min-width: 0; background: none; color: var(--card-dim); padding: 0; }
+.share-url { margin-top: .9em; font-size: 1.05em; font-weight: 600; word-break: break-all; color: var(--deep); }
+.share-btns { margin-top: 1.1em; display: flex; flex-wrap: wrap; gap: .5em; justify-content: center; }
+.share-btns button, .share-btns a {
+  font: inherit; font-size: .95em; cursor: pointer; text-decoration: none;
+  padding: .55em 1.05em; border-radius: 2em; border: 1px solid var(--rule);
+  background: transparent; color: var(--ink);
+}
+.share-btns .go { background: var(--deep); border-color: var(--deep); color: var(--on-accent); font-weight: 600; }
+.share-btns .quiet { color: var(--card-dim); }
+@media (max-width: 700px) { #btn-review { display: none; } }
+@media print { #share { display: none !important; } }
+.weeks .v-review { display: block; margin-top: 1em; font-size: .95em; color: var(--card-dim); }
+.weeks .v-review a {
+  display: inline; padding: 0; background: none; box-shadow: none; border-radius: 0;
+  color: var(--deep); font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--rule);
+}
+.weeks .v-review a:hover { transform: none; box-shadow: none; border-bottom-color: var(--deep); }

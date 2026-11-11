@@ -54,6 +54,7 @@ document.getElementById('lessons').innerHTML = STAGES.map((st, si) =>
           <a class="v-work" href="${l.dir}/work/">${one('For professionals', '職場專業人士')}<span lang="${Z ? 'en' : 'zh-Hant'}">${one('職場專業人士', 'For professionals')}</span></a>
           <a class="v-sport" href="${l.dir}/sport/">${one('For athletes', '運動員')}<span lang="${Z ? 'en' : 'zh-Hant'}">${one('運動員', 'For athletes')}</span></a>
         </span>
+        ${l.review ? `<span class="v-review">${one('Review · 重點複習', '重點複習 · Review')}：<a href="${l.dir}/review/?v=work">${one('professionals', '職場版')}</a> · <a href="${l.dir}/review/?v=sport">${one('athletes', '運動員版')}</a></span>` : ''}
         ${l.practice ? `<a class="v-practice" href="${l.dir}/practice/">${one('Practice the English · 英文練習', '英文練習 · 講稿、發音、問答')} →</a>` : ''}
         </span></li>`;
   }).join('')).join('');
