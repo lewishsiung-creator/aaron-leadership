@@ -190,6 +190,27 @@ should always know whether they are on time.
   The clocks update every second without redrawing the notes, so the notes
   never jump back to the top while being read.
 
+## 重點複習 — the review for the class (11 November 2026)
+
+- **In the deck**: the `重點複習 / review` button in the HUD (or `R`) opens a
+  panel for the projector — a QR code people scan with their phone, the
+  link, Copy / Share / Open / PDF. The QR code comes from qrcodejs on
+  cdnjs, loaded the first time the panel opens; offline the panel still
+  shows the link. Only lessons with `REVIEW` in content.js get the button.
+- **The page**: `lessonNN/review/?v=work|sport`, rendered by
+  `shared/review.js` + `shared/review.css`. Always both languages,
+  English first. The five points, *This week* and *Next time* are
+  `REVIEW` in content.js; the words, the quiz (answers behind a tap) and
+  the video come from the slides themselves. The unsourced 3,000 / 80%
+  figures are deliberately not in it.
+- **The PDF**: a real A4 file per version, `lessonNN-review-work|sport.pdf`,
+  made with Chrome by `tools/review-pdf.sh lessonNN`. **Run it again after
+  any change to the review or the slides**, then commit the PDFs. Its
+  footer always prints the public address.
+- **Homepage**: the lesson card links both versions' review pages.
+- **Switching keeps the place**: 中文/EN and ⇄ work/sport open on the same
+  slide with the same steps shown (`#7.2` = slide 7, two steps).
+
 ## Lesson 1 — corrections to the handout
 
 Each is explained in that slide's speaker notes, in Chinese, for Aaron.
