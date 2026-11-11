@@ -94,6 +94,13 @@
   PLAN.reduce((a, m, i) => (PLAN_END[i] = a + m), 0);
   const PLAN_TOTAL = PLAN_END.length ? PLAN_END[PLAN_END.length - 1] : 0;
 
+  /* Where each slide sits in the lesson's full list (both versions), so
+     the ⇄ link can open the other version on the matching slide even
+     when one version has a slide the other does not. Taken before the
+     Chinese swap replaces the slide objects. */
+  const ALL = (typeof SLIDES_ALL !== 'undefined') ? SLIDES_ALL : SLIDES;
+  const ALL_POS = SLIDES.map(s => ALL.indexOf(s));
+
   if (ZHMODE) {
     const ZH = window.ZH || {};
     const KEEP = new Set(['type', 'yt', 'dm', 'poster', 'src', 'terms', 'answer', 'n', 'of',
@@ -850,6 +857,7 @@
     sync();
     /* A refresh mid-workshop used to throw her back to slide 1. */
     try { history.replaceState(null, '', '#' + (idx + 1)); } catch (e) {}
+    pointVersionLink();
   }
 
   function next() {
@@ -1082,6 +1090,23 @@
     else box.classList.remove('pulse');
   }
 
+  /* ---------- keep the place across a switch ----------
+     here() is this slide and step, for the 中文/EN switch. The ⇄ link to
+     the other version is re-pointed on every slide: same slide where both
+     versions have it, else the slide just before it. */
+  function here() { return '#' + (idx + 1) + (step ? '.' + step : ''); }
+  const otherAud = window.AUDIENCE === 'sport' ? 'work' : 'sport';
+  const versionLink = document.querySelector('#hud a[href^="../' + otherAud + '/"]');
+  function pointVersionLink() {
+    if (!versionLink) return;
+    const pos = ALL_POS[idx];
+    if (pos < 0) return;
+    const inOther = x => !x.only || x.only === otherAud;
+    const n = ALL.slice(0, pos + 1).filter(inOther).length;
+    const same = inOther(ALL[pos]);
+    versionLink.setAttribute('href', '../' + otherAud + '/#' + Math.max(1, n) + (same && step ? '.' + step : ''));
+  }
+
   /* ---------- presenter sync ---------- */
   const bc = ('BroadcastChannel' in window) ? new BroadcastChannel(CH) : null;
   /* Everything the presenter window shows: where she is, what the next
@@ -1308,7 +1333,7 @@
     if (lower === 'm') { menu.classList.contains('on') ? closeMenu() : openMenu(); return; }
     if (lower === 'n') { peek.classList.toggle('on'); if (peek.classList.contains('on')) drawPeek(); return; }
     if (lower === 'p') { openPresenter(); return; }
-    if (lower === 'l') { switchLang('#' + (idx + 1)); return; }
+    if (lower === 'l') { switchLang(here()); return; }
     if (k === '?') { toggleHelp(!help.classList.contains('on')); return; }
     if (lower === 'f') {
       if (document.fullscreenElement) document.exitFullscreen();
@@ -1326,7 +1351,7 @@
   };
   document.getElementById('btn-presenter').onclick = e => { e.stopPropagation(); openPresenter(); };
   const btnLang = document.getElementById('btn-lang');
-  if (btnLang) btnLang.onclick = e => { e.stopPropagation(); switchLang('#' + (idx + 1)); };
+  if (btnLang) btnLang.onclick = e => { e.stopPropagation(); switchLang(here()); };
   applyLang();
   menu.addEventListener('click', e => { if (e.target === menu) closeMenu(); });
   lightbox.addEventListener('click', closeZoom);
@@ -1394,6 +1419,8 @@
   buildMenu();
   fit();
   /* #7 opens on slide 7 — how a language switch keeps her place. */
-  const fromHash = parseInt(location.hash.slice(1), 10);
-  show(fromHash > 0 ? fromHash - 1 : 0, 0);
+  /* #7 opens slide 7; #7.2 opens it with two steps already shown, which
+     is how a language or version switch keeps what was on screen. */
+  const fromHash = location.hash.match(/^#(\d+)(?:\.(\d+))?/);
+  show(fromHash ? +fromHash[1] - 1 : 0, fromHash && fromHash[2] ? +fromHash[2] : 0);
 })();
